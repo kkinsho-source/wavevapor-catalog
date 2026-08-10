@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0b0f14" />
+<meta name="description" content="Wave Vapor 產品目錄 — 下單請用 LINE 聯繫阿剛" />
+<title>Wave Vapor 產品目錄</title>
+<style>
+:root {
+  --bg: #0b0f14;
+  --card: #141b24;
+  --line: #1e2a38;
+  --text: #e8eef6;
+  --muted: #8b9bb0;
+  --accent: #3d9eff;
+  --accent2: #00d4aa;
+  --warn: #ffb020;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text);
+  font-family: "Segoe UI", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  line-height: 1.5; }
+a { color: var(--accent); }
+.wrap { max-width: 720px; margin: 0 auto; padding: 16px 14px 96px; }
+header {
+  position: sticky; top: 0; z-index: 20;
+  background: linear-gradient(180deg, #0b0f14 70%, transparent);
+  padding: 12px 0 8px; margin-bottom: 8px;
+}
+h1 { font-size: 1.25rem; margin: 0 0 4px; letter-spacing: .02em; }
+.sub { color: var(--muted); font-size: .85rem; margin: 0 0 10px; }
+.search {
+  width: 100%; padding: 12px 14px; border-radius: 12px;
+  border: 1px solid var(--line); background: var(--card); color: var(--text);
+  font-size: 1rem; outline: none;
+}
+.search:focus { border-color: var(--accent); }
+.nav {
+  display: flex; gap: 8px; overflow-x: auto; padding: 10px 0 4px;
+  -webkit-overflow-scrolling: touch; scrollbar-width: none;
+}
+.nav::-webkit-scrollbar { display: none; }
+.nav a {
+  flex: 0 0 auto; text-decoration: none; color: var(--text);
+  background: var(--card); border: 1px solid var(--line);
+  padding: 8px 12px; border-radius: 999px; font-size: .85rem; white-space: nowrap;
+}
+.nav a:active { border-color: var(--accent); }
+.card {
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: 16px; padding: 14px 14px 10px; margin: 12px 0;
+}
+.card h2 { font-size: 1.05rem; margin: 0 0 6px; color: #fff; }
+.blurb { color: var(--muted); font-size: .9rem; margin: 0 0 8px; }
+ul { margin: 0; padding: 0 0 4px 1.1rem; }
+li { margin: 4px 0; font-size: .95rem; }
+.sec {
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: 14px; margin: 8px 0; padding: 0 10px;
+}
+.sec summary {
+  cursor: pointer; list-style: none; padding: 12px 4px;
+  font-weight: 600; display: flex; justify-content: space-between; align-items: center;
+}
+.sec summary::-webkit-details-marker { display: none; }
+.sec summary:after { content: "▾"; color: var(--muted); font-weight: 400; }
+.sec[open] summary:after { content: "▴"; }
+.cnt {
+  font-size: .75rem; color: var(--muted); font-weight: 500;
+  background: #0b0f14; border-radius: 999px; padding: 2px 8px; margin-left: 8px;
+}
+.sec ul { padding-bottom: 10px; }
+.note {
+  font-size: .85rem; color: var(--muted);
+  border-left: 3px solid var(--accent2); padding: 8px 10px; margin: 12px 0;
+  background: rgba(0,212,170,.06); border-radius: 0 10px 10px 0;
+}
+.footer-cta {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+  background: rgba(11,15,20,.92); backdrop-filter: blur(8px);
+  border-top: 1px solid var(--line); padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+}
+.footer-cta .inner { max-width: 720px; margin: 0 auto; display: flex; gap: 8px; }
+.btn {
+  flex: 1; text-align: center; text-decoration: none; font-weight: 700;
+  padding: 12px 10px; border-radius: 12px; font-size: .95rem;
+}
+.btn-primary { background: linear-gradient(135deg, #3d9eff, #2b6fff); color: #fff; }
+.btn-ghost { background: var(--card); color: var(--text); border: 1px solid var(--line); }
+.hidden { display: none !important; }
+.tag { color: var(--warn); font-size: .8rem; }
+#empty { text-align: center; color: var(--muted); padding: 24px; display: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Wave Vapor 產品目錄</h1>
+    <p class="sub">現貨以下單確認為準 · 更新 2026-08-11 · 🧊=涼度</p>
+    <input class="search" id="q" type="search" placeholder="搜尋口味／關鍵字…" enterkeyhint="search" />
+    <nav class="nav" aria-label="分類">
+      <a href="#juice">小果汁</a>
+      <a href="#big">大果汁</a>
+      <a href="#open">主機耗材</a>
+      <a href="#closed">RELX／魔盒</a>
+      <a href="#disp">拋棄式</a>
+      <a href="#gum">GUM</a>
+      <a href="#order">怎麼買</a>
+    </nav>
+  </header>
+
+  <div class="note">
+    完整小果汁口味可搜尋或展開下列分類。<br/>
+    下單請用 <b>LINE 找阿剛</b>（勿在網頁留個資）。
+  </div>
+
+  <section id="juice">
+    <h2 style="font-size:1.1rem;margin:16px 4px 8px;">🧃 小果汁／鹽油</h2>
+    <div id="juice-list">
+      <details class="sec" open><summary>⏩新品/返場⏪ <span class="cnt">24</span></summary><ul><li>RP40胡椒博士【沙士】🧊🧊🧊</li><li>RP40橘絡沁野【卡曼橘、檸檬草】🧊🧊🧊</li><li>RP40緋色冰檸【檸檬、石榴】🧊🧊🧊</li><li>RP40日落晚風【火龍果、芒果、椰子】🧊🧊🧊</li><li>RP40朗姆燻痕【葡萄乾、煙燻朗姆酒】🧊</li><li>RP40冰霜柚梨【葡萄柚、雪梨】🧊🧊🧊</li><li>RP40奇異國度【奇異果、百香果、芭樂】🧊🧊🧊</li><li>美國菲利浦 蜂蜜咖啡</li><li>美國菲利浦 老咖啡</li><li>美國21區 鹹焦糖奶油</li><li>美國21區 甜奶霜黑咖啡</li><li>美國V² 焦糖香草奶油</li><li>美國V² 香草奶油雪茄</li><li>美國VR 蜂蜜奶油肉桂</li><li>美國PR 香蕉布丁</li><li>美國PR 草莓奶霜</li><li>SPY40初夏海鹽🧊🧊🧊</li><li>SPY40金夏鳳梨🧊🧊🧊</li><li>ST40椰林冰泉🧊🧊🧊🧊</li><li>ST40春曦茉莉🧊🧊🧊🧊</li><li>ST40沁涼薄荷🧊🧊🧊🧊</li><li>ST40冰晶薄荷🧊🧊🧊🧊</li><li>ST40冰川泉水🧊🧊🧊🧊</li><li>ST40奶香薄荷🧊🧊🧊🧊</li></ul></details>
+<details class="sec" open><summary>🍓水果類 <span class="cnt">81</span></summary><ul><li>PF櫻桃莓果冰🧊🧊🧊</li><li>PF黑嘉莉冰🧊🧊🧊</li><li>PF水蜜桃冰🧊🧊🧊</li><li>PF香橙冰🧊🧊🧊</li><li>PF藍莓冰🧊🧊🧊</li><li>PF葡萄冰🧊🧊🧊</li><li>PF百香果冰🧊🧊🧊</li><li>PF粉紅心芭樂冰🧊🧊🧊</li><li>PF哈蜜瓜冰🧊🧊🧊</li><li>PF沁心西瓜冰🧊🧊🧊</li><li>PF芒果冰🧊🧊🧊</li><li>PF金鑽鳳梨冰🧊🧊🧊</li><li>PF紅蘋果冰🧊🧊🧊</li><li>PF鮮草莓冰🧊🧊🧊</li><li>MHB可樂冰🧊🧊🧊</li><li>MHB葡萄冰🧊🧊🧊</li><li>MHB莓果冰🧊🧊🧊</li><li>MHB荔枝冰🧊🧊🧊</li><li>MHB芒果冰🧊🧊🧊</li><li>MHB白葡萄冰🧊🧊🧊</li><li>MHB西瓜蜜桃芒果🧊🧊🧊</li><li>MHB芒果火龍果🧊🧊🧊</li><li>MHB檸檬茉莉🧊🧊🧊</li><li>SA冰釀蜜桃🧊🧊</li><li>SA冰釀芒果🧊🧊</li><li>SA冰釀蘋果🧊🧊</li><li>SA冰釀粉紅芭樂🧊🧊</li><li>SA冰釀莓果🧊🧊</li><li>SA冰釀檸檬🧊🧊</li><li>SA冰釀藍莓🧊🧊</li><li>SA冰釀蜜柚百香果🧊🧊</li><li>TK東京水蜜桃冰🧊🧊🧊</li><li>TK東京荔枝冰🧊🧊🧊</li><li>TK東京香蕉冰🧊🧊🧊</li><li>RELX西瓜冰🧊🧊🧊</li><li>RELX可樂冰🧊🧊🧊</li><li>RELX老冰棍🧊🧊🧊</li><li>RELX鳳梨冰🧊🧊🧊</li><li>RELX芒果冰🧊🧊🧊</li><li>RELX奇異果冰🧊🧊🧊</li><li>RELX橘子汁冰🧊🧊🧊</li><li>RELX海鹽檸檬冰🧊🧊🧊</li><li>RELX藍樹莓薄荷冰🧊🧊🧊</li><li>RP40胡椒博士【沙士】🧊🧊🧊</li><li>RP40橘絡沁野【卡曼橘、檸檬草】🧊🧊🧊</li><li>RP40緋色冰檸【檸檬、石榴】🧊🧊🧊</li><li>RP40日落晚風【火龍果、芒果、椰子】🧊🧊🧊</li><li>RP40朗姆燻痕【葡萄乾、煙燻朗姆酒】🧊</li><li>RP40冰霜柚梨【葡萄柚、雪梨】🧊🧊🧊</li><li>RP40奇異國度【奇異果、百香果、芭樂】🧊🧊🧊</li><li>SIC酷冰芭樂🧊🧊🧊🧊</li><li>SIC酷冰西瓜🧊🧊🧊🧊</li><li>SIC酷冰水蜜桃🧊🧊🧊🧊</li><li>SIC酷冰百香果🧊🧊🧊🧊</li><li>SIC酷冰鳳梨🧊🧊🧊🧊</li><li>SIC酷冰紫葡萄🧊🧊🧊🧊</li><li>SIC酷冰白葡萄🧊🧊🧊🧊</li><li>SIC酷冰檸檬🧊🧊🧊🧊</li><li>美國MOB黑手黨草莓蜜桃芒果🧊🧊</li><li>美國IB冰山百香果🧊🧊🧊</li><li>美國IB冰山葡萄🧊🧊🧊</li><li>美國IB冰山荔枝🧊🧊🧊</li><li>美國莓果廚師🧊🧊🧊</li><li>AL白葡萄🧊🧊</li><li>AL荔枝百香果🧊🧊</li><li>SPY40初夏海鹽🧊🧊🧊</li><li>SPY40金夏鳳梨🧊🧊🧊</li><li>SPY40紅喉沙士冰🧊🧊🧊</li><li>SP酸莓果冰🧊🧊🧊</li><li>NA西瓜哈密瓜🧊🧊</li><li>NA草莓西瓜🧊🧊</li><li>JK葡萄荔枝🧊🧊</li><li>LH蘋果葡萄🧊🧊🧊</li><li>LH蜂蜜百香果🧊🧊🧊</li><li>LH荔枝水蜜桃🧊🧊🧊</li><li>MS蘆薈白葡萄🧊🧊🧊🧊</li><li>MS靜岡藍莓🧊🧊🧊🧊</li><li>MrQ小熊雙倍葡萄軟糖🧊🧊</li><li>MrQ小熊草莓軟糖🧊🧊</li><li>酷斃葡萄🧊🧊🧊</li><li>WDG蜜桃蘇打🧊🧊🧊</li></ul></details>
+<details class="sec" open><summary>❌🧊無涼系列 <span class="cnt">8</span></summary><ul><li>OH嗨啾葡萄</li><li>OH嗨啾蘋果</li><li>OH嗨啾芒果</li><li>OH嗨啾芭樂</li><li>OH嗨啾草莓</li><li>OH嗨啾水蜜桃</li><li>OH嗨啾百香果</li><li>OH嗨啾藍莓</li></ul></details>
+<details class="sec" open><summary>🥤汽水/飲料類 <span class="cnt">19</span></summary><ul><li>SIC酷冰可樂🧊🧊🧊🧊</li><li>SIC酷冰雪碧🧊🧊🧊🧊</li><li>SIC酷冰沙士🧊🧊🧊🧊</li><li>MHB雪碧冰🧊🧊🧊</li><li>MHB寶礦力🧊🧊🧊</li><li>MHB紅牛冰🧊🧊🧊</li><li>就是寶礦力🧊🧊🧊</li><li>SPY原味蘇打🧊🧊</li><li>HB檸檬可樂冰🧊🧊🧊</li><li>FrozenX檸檬雪碧🧊🧊🧊</li><li>FrozenX可樂冰🧊🧊🧊</li><li>FrozenX沙士冰🧊🧊🧊</li><li>NA紅牛冰🧊🧊</li><li>PF老冰棍🧊🧊🧊</li><li>PF麥根沙士🧊🧊🧊</li><li>GJ就是養樂多🧊🧊🧊</li><li>安娜與簡 奶油咖啡糖🧊🧊</li><li>兒時黃金沙士糖🧊🧊🧊</li><li>LH麥根沙士🧊🧊</li></ul></details>
+<details class="sec" open><summary>💧薄荷/無味道 不影響他人 <span class="cnt">15</span></summary><ul><li>MHB薄荷冰🧊🧊🧊</li><li>MHB冰礦泉水🧊🧊🧊</li><li>TK東京薄荷葉🧊🧊🧊</li><li>SIC酷冰薄荷🧊🧊🧊🧊</li><li>美國BLVK 勁涼薄荷🧊🧊🧊</li><li>美國BLVK ZERO (無味果汁)</li><li>AIR313南極薄荷🧊🧊🧊</li><li>MS南極薄荷🧊🧊🧊🧊</li><li>MS冰山雪泉🧊🧊🧊🧊</li><li>ST40椰林冰泉🧊🧊🧊🧊</li><li>ST40春曦茉莉🧊🧊🧊🧊</li><li>ST40沁涼薄荷🧊🧊🧊🧊</li><li>ST40冰晶薄荷🧊🧊🧊🧊</li><li>ST40冰川泉水🧊🧊🧊🧊</li><li>ST40奶香薄荷🧊🧊🧊🧊</li></ul></details>
+<details class="sec" open><summary>🍵茶類 <span class="cnt">17</span></summary><ul><li>MHB龍井綠茶🧊🧊🧊</li><li>PF茉莉鐵觀音🧊🧊🧊</li><li>TT凍烏龍🧊🧊</li><li>TL香片綠茶</li><li>SIC酷冰紅茶🧊🧊🧊🧊</li><li>SIC酷冰烏龍茶🧊🧊🧊🧊</li><li>SIC酷冰茉莉綠茶🧊🧊🧊🧊</li><li>SIC酷冰白桃烏龍🧊🧊🧊🧊</li><li>SIC酷冰桂花烏龍🧊🧊🧊🧊</li><li>RELX白桃烏龍冰🧊🧊🧊</li><li>XCS皇家康普茶🧊🧊🧊</li><li>XCS特級綠茶🧊🧊🧊</li><li>XCS蜜桃烏龍🧊🧊🧊</li><li>XCS原萃鐵觀音🧊🧊🧊</li><li>XCS茉莉綠茶🧊🧊🧊</li><li>XCS安溪鐵觀音🧊🧊🧊</li><li>XCS雲霧茶</li></ul></details>
+<details class="sec" open><summary>🚬雪茄類 <span class="cnt">20</span></summary><ul><li>美國生命樹 VCT香草杏仁雪茄</li><li>美國生命樹 聖胡安雪茄</li><li>美國BLVK 古巴雪茄</li><li>美國V² 香草奶油雪茄</li><li>RY咖啡烤煙</li><li>RY美式烤煙</li><li>RY古巴雪茄</li><li>RY英式淡煙</li><li>RY藍莓涼煙🧊🧊</li><li>AL經典煙草</li><li>GG經典煙草</li><li>GG爆米花雪茄</li><li>GG堅果煙草</li><li>GG可可雪茄</li><li>GG爵士煙草</li><li>SA蜂蜜煙草</li><li>SA焦糖煙草</li><li>SA堅果華夫餅煙草</li><li>SA奶油煙草🧊</li><li>MO奶酪煙草</li></ul></details>
+<details class="sec" open><summary>🍮甜點類 <span class="cnt">14</span></summary><ul><li>美國菲利浦 蜂蜜咖啡</li><li>美國菲利浦 老咖啡</li><li>美國21區 鹹焦糖奶油</li><li>美國21區 甜奶霜黑咖啡</li><li>美國V² 焦糖香草奶油</li><li>美國VR 蜂蜜奶油肉桂</li><li>美國PR 香蕉布丁</li><li>美國PR 草莓奶霜</li><li>美國BLVK 香草卡士達</li><li>美國伐木 草莓牛奶</li><li>LH太妃糖</li><li>PF綠豆冰沙🧊🧊🧊</li><li>GJ草莓米餅</li><li>GJ薄荷巧克力🧊</li></ul></details>
+    </div>
+    <p id="empty">找不到符合的口味，換個關鍵字或直接 LINE 問阿剛～</p>
+  </section>
+
+  <section class="card" id="big"><h2>大果汁 60ml</h2><p class="blurb">適合開放式主機灌油。請直接傳品名問現貨。</p><ul><li>請 LINE 告知想要的大果汁品名／系列，阿剛幫您確認現貨。</li></ul></section>
+<section class="card" id="open"><h2>開放式主機＆耗材</h2><p class="blurb">可灌大／小果汁（依型號）。耗材：空彈／芯等同規格可任搭。</p><ul><li>dotPod／Pod Go／Pod Plus／Pod Max</li><li>AIO 系列、ZEEP2、其他開放式型號</li><li>下單請說：型號＋顏色＋是否要空彈／芯</li></ul></section>
+<section class="card" id="closed"><h2>封閉式 RELX／MH魔盒</h2><p class="blurb">專用彈，不能當瓶裝汁灌。</p><ul><li>RELX 悅客5代：主機色＋彈口味</li><li>MH 魔盒：主機色＋彈口味</li><li>下單請說：主機或彈、顏色／口味、數量</li></ul></section>
+<section class="card" id="disp"><h2>拋棄式</h2><p class="blurb">以現貨為準。</p><ul><li>dotPlus 等拋棄式（請傳口味＋數量詢問）</li></ul></section>
+<section class="card" id="gum"><h2>口嚼錠 GUM</h2><p class="blurb">多口味，請傳 GUM＋口味＋盒數。</p><ul><li>請 LINE 詢問現貨口味</li></ul></section>
+
+  <section class="card" id="order">
+    <h2>怎麼買</h2>
+    <ul>
+      <li>LINE 傳：<b>品名＋數量</b></li>
+      <li>超商：7-11 或 全家</li>
+      <li>付款：到付 或 匯款</li>
+      <li>收件：姓名、手機、<b>門市店號</b>（優先）</li>
+    </ul>
+    <p class="blurb">運費：商品未滿 2000 收 60；滿 2000 免運<br/>
+    回覆時間：週一至週日 15:00–23:00（週日較慢）</p>
+    <p class="tag">※ 活動／現貨以下單當下確認為準</p>
+  </section>
+</div>
+
+<div class="footer-cta">
+  <div class="inner">
+    <a class="btn btn-ghost" href="#juice">回目錄</a>
+    <a class="btn btn-primary" id="line-btn" href="#">LINE 下單</a>
+  </div>
+</div>
+
+<script>
+// Optional: set your LINE OA link, e.g. https://line.me/R/ti/p/@xxxx
+const LINE_URL = ""; // TODO: 填官方帳號加好友連結
+const btn = document.getElementById('line-btn');
+if (LINE_URL) {
+  btn.href = LINE_URL;
+  btn.textContent = "LINE 找阿剛";
+} else {
+  btn.href = "#order";
+  btn.textContent = "看怎麼買";
+  btn.title = "請在 HTML 填入 LINE_URL";
+}
+
+const q = document.getElementById('q');
+const empty = document.getElementById('empty');
+q.addEventListener('input', () => {
+  const kw = q.value.trim().toLowerCase();
+  let any = false;
+  document.querySelectorAll('#juice-list .sec').forEach(sec => {
+    let hitSec = false;
+    sec.querySelectorAll('li').forEach(li => {
+      const ok = !kw || li.textContent.toLowerCase().includes(kw);
+      li.classList.toggle('hidden', !ok);
+      if (ok) hitSec = true;
+    });
+    sec.classList.toggle('hidden', !hitSec);
+    if (hitSec) {
+      any = true;
+      if (kw) sec.open = true;
+    }
+  });
+  empty.style.display = any ? 'none' : 'block';
+});
+</script>
+</body>
+</html>
