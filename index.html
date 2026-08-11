@@ -550,6 +550,48 @@ html[data-theme="light"] .cart-tip {
   color: #fff;
 }
 
+
+/* CLOSED_BRAND_GRID */
+.closed-brands{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin:0 0 12px;
+}
+.closed-banner{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  gap:8px;
+  padding:12px 10px 14px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:var(--card);
+  box-shadow:0 2px 10px rgba(0,0,0,.12);
+  margin:0;
+}
+.closed-banner img{
+  width:100%;
+  max-width:120px;
+  height:88px;
+  object-fit:contain;
+  border-radius:12px;
+  background:linear-gradient(160deg,#121a24,#0c121a);
+  border:1px solid var(--line);
+}
+html[data-theme="light"] .closed-banner img{
+  background:linear-gradient(160deg,#f7f9fc,#eef2f7);
+}
+.closed-banner strong{
+  font-size:.95rem;
+  font-weight:750;
+}
+@media (max-width:380px){
+  .closed-brands{grid-template-columns:1fr 1fr;gap:8px}
+  .closed-banner img{height:72px;max-width:96px}
+}
+
 </style>
 </head>
 <body>
@@ -1301,8 +1343,10 @@ function renderClosed(app){
   const wasOpen = collectOpenSecs(app);
   const ci = DATA.closed_images || {};
   let banners = "";
-  if(ci.relx) banners += `<div class="closed-banner"><img src="${escapeHtml(ci.relx)}" alt="RELX" loading="lazy" /><div><strong>RELX 5代</strong></div></div>`;
-  if(ci.mh) banners += `<div class="closed-banner"><img src="${escapeHtml(ci.mh)}" alt="MH" loading="lazy" /><div><strong>MH魔盒</strong></div></div>`;
+  const brandCards = [];
+  if(ci.relx) brandCards.push(`<div class="closed-banner"><img src="${escapeHtml(ci.relx)}" alt="RELX" loading="lazy" /><strong>RELX 5代</strong></div>`);
+  if(ci.mh) brandCards.push(`<div class="closed-banner"><img src="${escapeHtml(ci.mh)}" alt="MH" loading="lazy" /><strong>MH魔盒</strong></div>`);
+  if(brandCards.length) banners = `<div class="closed-brands">${brandCards.join("")}</div>`;
   const groups = [
     ["RELX 5代主機", DATA.closed.relx_hosts],
     ["RELX 5代彈", DATA.closed.relx_pods],
