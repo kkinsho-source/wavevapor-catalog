@@ -402,6 +402,30 @@ details.sec summary { padding: 13px 6px; }
   background: linear-gradient(135deg, #ff6b6b, #d64545); color: #fff;
 }
 
+
+.announce{position:fixed;inset:0;z-index:10050;display:none;align-items:center;justify-content:center;
+  background:radial-gradient(1200px 600px at 50% -10%,#152033,#0b0f14 55%);padding:18px}
+body.announce-on #announce{display:flex}
+body.announce-on #main{display:none !important}
+body.announce-on .dock,body.announce-on .to-top{display:none !important}
+.announce-card{width:min(420px,100%);max-height:min(88vh,720px);overflow:auto;
+  background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px 18px 18px;
+  box-shadow:0 10px 32px rgba(0,0,0,.35)}
+.announce-card h2{margin:0 0 12px;font-size:1.15rem;font-weight:800;text-align:center;line-height:1.35}
+.announce-card .a-body{font-size:.92rem;line-height:1.55;color:var(--text)}
+.announce-card .a-body p{margin:0 0 10px}
+.announce-card .a-body ul{margin:6px 0 12px;padding-left:1.2rem}
+.announce-card .a-body li{margin:6px 0}
+.announce-card .a-box{margin:12px 0;padding:12px 12px;border-radius:14px;
+  border:1px solid rgba(255,200,87,.35);background:rgba(255,200,87,.08)}
+.announce-card .a-box strong{display:block;margin-bottom:6px;color:#ffc857}
+.announce-card .a-foot{color:var(--muted);font-size:.82rem;margin:10px 0 0}
+.announce-card .a-go{width:100%;margin-top:16px;border:0;border-radius:14px;padding:14px 12px;
+  font-weight:800;font-size:.95rem;cursor:pointer;min-height:48px;
+  background:linear-gradient(135deg,#3d9eff,#2b6fff);color:#fff}
+html[data-theme="light"] .announce{
+  background:radial-gradient(1200px 600px at 50% -10%,#e8eef8,#f4f6f9 55%)}
+
 </style>
 </head>
 <body>
@@ -414,6 +438,29 @@ details.sec summary { padding: 13px 6px; }
     <p id="gate-err" class="gate-err" style="color:#ff6b6b;font-size:.85rem;min-height:1.2em;margin:10px 0 0"></p>
   </div>
 </div>
+
+<div id="announce" class="announce" role="dialog" aria-modal="true" aria-labelledby="announce-title" aria-hidden="true">
+  <div class="announce-card">
+    <h2 id="announce-title">⚠️ 重要小叮嚀</h2>
+    <div class="a-body">
+      <p>📢 近期相關規定與罰則已提高，<br/>
+      請勿在禁止／敏感的公開場所使用，<br/>
+      並請妥善放置物品。</p>
+      <p>🚶 外出使用前請先：</p>
+      <ul>
+        <li>🛑 停、看、聽，注意周圍是否安全、適宜</li>
+        <li>🙏 避免引起他人不適或檢舉</li>
+      </ul>
+      <div class="a-box">
+        <strong>💬 若被詢問購買來源</strong>
+        可回：網路上搜尋隨便購買的，忘記了。
+      </div>
+      <p class="a-foot">💌 其他叮嚀阿剛也會在聊天室提醒</p>
+    </div>
+    <button type="button" class="a-go" id="announce-go">我了解，進入清單 ✅</button>
+  </div>
+</div>
+
 <div class="wrap" id="main" hidden>
   <header>
     <div class="head-row">
@@ -528,6 +575,8 @@ const LS_KEY = "wv_cart_v1";
 const RECENT_KEY = "wv_recent_v1";
 const THEME_KEY = "wv_theme_v1";
 const SHIP_KEY = "wv_ship_v1";
+const ANNOUNCE_KEY = "wv_announce_ver";
+const ANNOUNCE_VER = "v1-20260811";
 const GATE_KEY = "wv_studio_gate_v1";
 
 
@@ -708,26 +757,61 @@ async function sha256hex(text){
   return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
 }
 
+
+function enterMainCatalog(){
+  document.body.classList.remove("announce-on");
+  document.body.classList.add("unlocked");
+  const main=document.getElementById("main");
+  const gate=document.getElementById("gate");
+  const ann=document.getElementById("announce");
+  if(main){ main.hidden=false; main.style.display=""; }
+  if(gate){ gate.style.display="none"; }
+  if(ann){ ann.style.display="none"; ann.setAttribute("aria-hidden","true"); }
+}
+
+function showAnnounce(){
+  document.body.classList.add("announce-on");
+  document.body.classList.add("unlocked"); // hide gate
+  const gate=document.getElementById("gate");
+  const main=document.getElementById("main");
+  const ann=document.getElementById("announce");
+  if(gate){ gate.style.display="none"; }
+  if(main){ main.hidden=true; main.style.display="none"; }
+  if(ann){
+    ann.style.display="flex";
+    ann.setAttribute("aria-hidden","false");
+  }
+  const go=document.getElementById("announce-go");
+  if(go){
+    go.onclick = ()=>{
+      try { localStorage.setItem(ANNOUNCE_KEY, ANNOUNCE_VER); } catch(e) {}
+      enterMainCatalog();
+    };
+  }
+}
+
+function afterUnlock(){
+  let seen = "";
+  try { seen = localStorage.getItem(ANNOUNCE_KEY) || ""; } catch(e) {}
+  if(seen === ANNOUNCE_VER){
+    enterMainCatalog();
+  } else {
+    showAnnounce();
+  }
+}
+
 async function tryUnlock(pass){
   const hex = await sha256hex((pass||"").trim());
   if(hex !== PASS_SHA) return false;
   sessionStorage.setItem(GATE_KEY, hex);
-  document.body.classList.add("unlocked");
-  const main=document.getElementById("main");
-  const gate=document.getElementById("gate");
-  if(main){ main.hidden=false; main.style.display=""; }
-  if(gate){ gate.style.display="none"; }
+  afterUnlock();
   return true;
 }
 
 async function initGate(){
   const saved = sessionStorage.getItem(GATE_KEY);
   if(saved && saved === PASS_SHA){
-    document.body.classList.add("unlocked");
-    const main=document.getElementById("main");
-    const gate=document.getElementById("gate");
-    if(main){ main.hidden=false; main.style.display=""; }
-    if(gate){ gate.style.display="none"; }
+    afterUnlock();
     return;
   }
   const btn = document.getElementById("gate-btn");
