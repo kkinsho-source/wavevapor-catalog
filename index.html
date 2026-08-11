@@ -701,7 +701,7 @@ html[data-theme="light"] .closed-banner img{
   <div class="dock-inner">
     <div class="dock-sheet" id="dock-sheet" hidden>
       <div class="dock-top">
-        <span id="cart-summary">尚未選購</span>
+        <span id="cart-summary">尚未挑選</span>
         <button type="button" class="btn-sub" id="btn-close-cart" style="flex:0 0 auto;min-height:44px;padding:8px 12px">收起</button>
       </div>
       <div id="cart-panel" class="cart-panel open"></div>
@@ -713,12 +713,12 @@ html[data-theme="light"] .closed-banner img{
     </div>
   </div>
 </div>
-<button type="button" class="cart-fab" id="cart-fab" aria-label="打開購物車" title="購物車">
+<button type="button" class="cart-fab" id="cart-fab" aria-label="打開挑選清單" title="挑選清單">
   🛒
   <span class="fab-badge" id="fab-badge">0</span>
 </button>
 <div class="cart-tip" id="cart-tip" role="status">
-  已加入商品。選完請點右下角 🛒 購物車，再複製給阿剛。
+  已加入商品。選完請點右下角 🛒 挑選清單，再複製給阿剛。
   <button type="button" id="cart-tip-ok">知道了</button>
 </div>
 <button type="button" class="to-top" id="to-top" aria-label="回頂" title="回頂">↑</button>
@@ -1508,7 +1508,7 @@ function renderDock(){
   const sum = document.getElementById("cart-summary");
   const copy = document.getElementById("btn-copy");
   const badge = document.getElementById("fab-badge");
-  if(sum) sum.textContent = n ? `已選 ${n} 件（${state.cart.length} 項）` : "尚未選購";
+  if(sum) sum.textContent = n ? `已選 ${n} 件（${state.cart.length} 項）` : "尚未挑選";
   if(badge){
     badge.textContent = String(n);
     if(n>0) badge.classList.add("show"); else badge.classList.remove("show");
@@ -1520,7 +1520,7 @@ function renderDock(){
   const panel = document.getElementById("cart-panel");
   if(!panel) return;
   if(!state.cart.length){
-    panel.innerHTML = `<div class="empty">購物清單是空的</div>`;
+    panel.innerHTML = `<div class="empty">挑選清單是空的</div>`;
   } else {
     panel.innerHTML = state.cart.map(it=>`<div class="row">
       <div class="name">${escapeHtml(it.label)}</div>
