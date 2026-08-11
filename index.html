@@ -815,7 +815,15 @@ function initVersion(){
 }
 
 function loadRecent(){
-  try { return JSON.parse(localStorage.getItem(RECENT_KEY)||"[]"); } catch(e){ return []; }
+  let list = [];
+  try { list = JSON.parse(localStorage.getItem(RECENT_KEY)||"[]"); } catch(e){ list = []; }
+  if(!Array.isArray(list)) list = [];
+  // 只留最新 6 個；舊資料超過也立刻收斂
+  if(list.length > 6){
+    list = list.slice(0, 6);
+    try { localStorage.setItem(RECENT_KEY, JSON.stringify(list)); } catch(e) {}
+  }
+  return list;
 }
 function saveRecentList(list){
   try { localStorage.setItem(RECENT_KEY, JSON.stringify(list.slice(0,6))); } catch(e) {}
@@ -824,6 +832,8 @@ function pushRecent(item){
   if(!item || !item.id) return;
   let list = loadRecent().filter(x=>x.id !== item.id);
   list.unshift({id:item.id, label:item.label||item.name, kind:item.kind||""});
+  // 加入後只保留最新 6 個
+  list = list.slice(0, 6);
   saveRecentList(list);
   renderRecent();
 }
