@@ -82,7 +82,7 @@ details.sec summary::-webkit-details-marker{display:none}
   background:linear-gradient(135deg,#3d9eff,#2b6fff);color:#fff}
 .gate-err{color:var(--danger);font-size:.85rem;min-height:1.2em;margin:10px 0 0}
 body:not(.unlocked) .dock{display:none !important}
-body.unlocked #gate{display:none}
+body.unlocked #gate{display:none !important}
 body.unlocked #main{display:block !important}
 body.unlocked #main[hidden]{display:block !important}
 
@@ -405,7 +405,8 @@ details.sec summary { padding: 13px 6px; }
 
 .announce{position:fixed;inset:0;z-index:10050;display:none;align-items:center;justify-content:center;
   background:radial-gradient(1200px 600px at 50% -10%,#152033,#0b0f14 55%);padding:18px}
-body.announce-on #announce{display:flex}
+body.announce-on #gate{display:none !important}
+body.announce-on #announce{display:flex !important}
 body.announce-on #main{display:none !important}
 body.announce-on .dock,body.announce-on .to-top{display:none !important}
 .announce-card{width:min(420px,100%);max-height:min(88vh,720px);overflow:auto;
@@ -952,73 +953,170 @@ async function sha256hex(text){
 }
 
 
+function forceShow(el, on){
+  if(!el) return;
+  if(on){
+    el.hidden = false;
+    el.style.setProperty("display", el.id === "announce" ? "flex" : "block", "important");
+  } else {
+    el.hidden = true;
+    el.style.setProperty("display", "none", "important");
+  }
+}
+
 function enterMainCatalog(){
-  document.body.classList.remove("announce-on");
-  document.body.classList.add("unlocked");
-  const main=document.getElementById("main");
-  const gate=document.getElementById("gate");
-  const ann=document.getElementById("announce");
-  if(main){ main.hidden=false; main.style.display=""; }
-  if(gate){ gate.style.display="none"; }
-  if(ann){ ann.style.display="none"; ann.setAttribute("aria-hidden","true"); }
+  try {
+    document.body.classList.remove("announce-on");
+    document.body.classList.add("unlocked");
+    forceShow(document.getElementById("gate"), false);
+    forceShow(document.getElementById("announce"), false);
+    const main = document.getElementById("main");
+    if(main){
+      main.hidden = false;
+      main.style.removeProperty("display");
+      main.style.display = "";
+    }
+    // ensure dock/fab usable
+    const fab = document.getElementById("cart-fab");
+    if(fab) fab.style.visibility = "visible";
+  } catch(e) {
+    console.error("enterMainCatalog", e);
+    alert("進入清單時發生問題，請重新整理後再試");
+  }
 }
 
 function showAnnounce(){
-  document.body.classList.add("announce-on");
-  document.body.classList.add("unlocked"); // hide gate
-  const gate=document.getElementById("gate");
-  const main=document.getElementById("main");
-  const ann=document.getElementById("announce");
-  if(gate){ gate.style.display="none"; }
-  if(main){ main.hidden=true; main.style.display="none"; }
-  if(ann){
-    ann.style.display="flex";
-    ann.setAttribute("aria-hidden","false");
-  }
-  const go=document.getElementById("announce-go");
-  if(go){
-    go.onclick = ()=>{
-      try { localStorage.setItem(ANNOUNCE_KEY, ANNOUNCE_VER); } catch(e) {}
+  try {
+    document.body.classList.add("announce-on");
+    document.body.classList.add("unlocked");
+    forceShow(document.getElementById("gate"), false);
+    forceShow(document.getElementById("main"), false);
+    const ann = document.getElementById("announce");
+    forceShow(ann, true);
+    if(ann) ann.setAttribute("aria-hidden", "false");
+    const go = document.getElementById("announce-go");
+    if(go){
+      go.onclick = function(){
+        try { localStorage.setItem(ANNOUNCE_KEY, ANNOUNCE_VER); } catch(err) {}
+        enterMainCatalog();
+      };
+    } else {
+      // no button — still enter to avoid soft-lock
       enterMainCatalog();
-    };
+    }
+  } catch(e) {
+    console.error("showAnnounce", e);
+    enterMainCatalog();
   }
 }
 
 function afterUnlock(){
-  let seen = "";
-  try { seen = localStorage.getItem(ANNOUNCE_KEY) || ""; } catch(e) {}
-  if(seen === ANNOUNCE_VER){
+  try {
+    let seen = "";
+    try { seen = localStorage.getItem(ANNOUNCE_KEY) || ""; } catch(e) { seen = ""; }
+    if(seen === ANNOUNCE_VER){
+      enterMainCatalog();
+    } else {
+      showAnnounce();
+    }
+  } catch(e) {
+    console.error("afterUnlock", e);
     enterMainCatalog();
-  } else {
-    showAnnounce();
   }
+}
+
+async function sha256hex(text){
+  const str = String(text || "");
+  if(window.crypto && crypto.subtle && crypto.subtle.digest){
+    const data = new TextEncoder().encode(str);
+    const buf = await crypto.subtle.digest("SHA-256", data);
+    return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
+  }
+  // fallback pure JS sha256 (for odd webviews)
+  return sha256hexFallback(str);
+}
+
+function sha256hexFallback(ascii){
+  // minimal async-compatible sync sha256
+  function rotr(n, x){ return (x>>>n) | (x<<(32-n)); }
+  function ch(x,y,z){ return (x&y) ^ (~x&z); }
+  function maj(x,y,z){ return (x&y) ^ (x&z) ^ (y&z); }
+  function sigma0(x){ return rotr(2,x) ^ rotr(13,x) ^ rotr(22,x); }
+  function sigma1(x){ return rotr(6,x) ^ rotr(11,x) ^ rotr(25,x); }
+  function gamma0(x){ return rotr(7,x) ^ rotr(18,x) ^ (x>>>3); }
+  function gamma1(x){ return rotr(17,x) ^ rotr(19,x) ^ (x>>>10); }
+  const K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+  let bytes = [];
+  for(let i=0;i<ascii.length;i++){
+    let c = ascii.charCodeAt(i);
+    if(c < 128) bytes.push(c);
+    else { // basic utf8
+      const s = unescape(encodeURIComponent(ascii));
+      bytes = [];
+      for(let j=0;j<s.length;j++) bytes.push(s.charCodeAt(j)&255);
+      break;
+    }
+  }
+  const bitLen = bytes.length * 8;
+  bytes.push(0x80);
+  while((bytes.length % 64) !== 56) bytes.push(0);
+  for(let i=7;i>=0;i--) bytes.push((bitLen / Math.pow(2, i*8)) & 0xff);
+  let H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+  for(let i=0;i<bytes.length;i+=64){
+    const w = new Array(64);
+    for(let t=0;t<16;t++){
+      w[t] = (bytes[i+t*4]<<24) | (bytes[i+t*4+1]<<16) | (bytes[i+t*4+2]<<8) | (bytes[i+t*4+3]);
+      w[t] >>>= 0;
+    }
+    for(let t=16;t<64;t++) w[t] = (gamma1(w[t-2]) + w[t-7] + gamma0(w[t-15]) + w[t-16]) >>> 0;
+    let [a,b,c,d,e,f,g,h] = H;
+    for(let t=0;t<64;t++){
+      const t1 = (h + sigma1(e) + ch(e,f,g) + K[t] + w[t]) >>> 0;
+      const t2 = (sigma0(a) + maj(a,b,c)) >>> 0;
+      h=g; g=f; f=e; e=(d+t1)>>>0; d=c; c=b; b=a; a=(t1+t2)>>>0;
+    }
+    H = [(H[0]+a)>>>0,(H[1]+b)>>>0,(H[2]+c)>>>0,(H[3]+d)>>>0,(H[4]+e)>>>0,(H[5]+f)>>>0,(H[6]+g)>>>0,(H[7]+h)>>>0];
+  }
+  return H.map(x=>("00000000"+(x>>>0).toString(16)).slice(-8)).join("");
 }
 
 async function tryUnlock(pass){
   const hex = await sha256hex((pass||"").trim());
   if(hex !== PASS_SHA) return false;
-  sessionStorage.setItem(GATE_KEY, hex);
+  try { sessionStorage.setItem(GATE_KEY, hex); } catch(e) {}
   afterUnlock();
   return true;
 }
 
 async function initGate(){
-  const saved = sessionStorage.getItem(GATE_KEY);
-  if(saved && saved === PASS_SHA){
-    afterUnlock();
-    return;
-  }
   const btn = document.getElementById("gate-btn");
   const input = document.getElementById("gate-pass");
   const err = document.getElementById("gate-err");
+  try {
+    const saved = sessionStorage.getItem(GATE_KEY);
+    if(saved && saved === PASS_SHA){
+      afterUnlock();
+      return;
+    }
+  } catch(e) {}
   const go = async ()=>{
-    err.textContent = "";
-    const ok = await tryUnlock(input.value);
-    if(!ok){ err.textContent = "通行碼不正確"; input.select(); return; }
+    if(err) err.textContent = "";
+    try {
+      const ok = await tryUnlock(input ? input.value : "");
+      if(!ok){
+        if(err) err.textContent = "通行碼不正確";
+        if(input) input.select();
+      }
+    } catch(e) {
+      console.error(e);
+      if(err) err.textContent = "驗證失敗，請重試或換瀏覽器開啟";
+    }
   };
-  btn.addEventListener("click", go);
-  input.addEventListener("keydown", e=>{ if(e.key==="Enter") go(); });
-  input.focus();
+  if(btn) btn.addEventListener("click", go);
+  if(input){
+    input.addEventListener("keydown", e=>{ if(e.key==="Enter") go(); });
+    input.focus();
+  }
 }
 
 
