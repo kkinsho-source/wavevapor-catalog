@@ -642,10 +642,15 @@ html[data-theme="light"] .closed-banner img{
     <div class="search-hint" id="search-hint" hidden></div>
   </header>
 
-  <div class="recent-box" id="recent-box">
-    <h2>常買清單</h2>
+  <details class="recent-box sec" id="recent-box" open>
+    <summary class="recent-summary">
+      <span class="sec-summary-row">
+        <span><strong>常買清單</strong> <span class="meta" id="recent-count"></span></span>
+        <span class="sec-chevron">▼ 點開</span>
+      </span>
+    </summary>
     <div id="recent-list" class="recent-empty">常買會留在這裡，下次打開還在，方便再點</div>
-  </div>
+  </details>
 
   <div class="note">
     本頁<strong>不結帳</strong>。請複製清單 → 貼到 LINE 給阿剛。<br/>
@@ -813,7 +818,7 @@ function loadRecent(){
   try { return JSON.parse(localStorage.getItem(RECENT_KEY)||"[]"); } catch(e){ return []; }
 }
 function saveRecentList(list){
-  try { localStorage.setItem(RECENT_KEY, JSON.stringify(list.slice(0,12))); } catch(e) {}
+  try { localStorage.setItem(RECENT_KEY, JSON.stringify(list.slice(0,6))); } catch(e) {}
 }
 function pushRecent(item){
   if(!item || !item.id) return;
@@ -826,6 +831,8 @@ function renderRecent(){
   const box = document.getElementById("recent-list");
   if(!box) return;
   const list = loadRecent();
+  const cnt = document.getElementById("recent-count");
+  if(cnt) cnt.textContent = list.length ? ("("+list.length+")") : "";
   if(!list.length){
     box.className = "recent-empty";
     box.textContent = "常買會留在這裡，下次打開還在，方便再點";
