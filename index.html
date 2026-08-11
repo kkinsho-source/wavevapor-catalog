@@ -328,7 +328,7 @@ details.sec summary { padding: 13px 6px; }
 
 
 /* P2_TAP_A11Y */
-.theme-btn, #btn-toggle-cart {
+.theme-btn, #btn-close-cart {
   min-height: 44px;
   min-width: 44px;
   padding: 10px 14px;
@@ -426,6 +426,130 @@ body.announce-on .dock,body.announce-on .to-top{display:none !important}
 html[data-theme="light"] .announce{
   background:radial-gradient(1200px 600px at 50% -10%,#e8eef8,#f4f6f9 55%)}
 
+
+/* CART_FAB_UI */
+.dock {
+  background: transparent !important;
+  border-top: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  pointer-events: none;
+}
+.dock-inner {
+  pointer-events: none;
+  max-width: 760px;
+  margin: 0 auto;
+  position: relative;
+}
+.dock-sheet {
+  pointer-events: auto;
+  display: none;
+  margin: 0 12px 10px;
+  padding: 12px;
+  border-radius: 18px 18px 14px 14px;
+  background: rgba(15,22,32,.97);
+  border: 1px solid var(--line);
+  box-shadow: 0 -8px 28px rgba(0,0,0,.35);
+  backdrop-filter: blur(12px);
+  max-height: min(58vh, 520px);
+  overflow: auto;
+}
+.dock-sheet.open { display: block; }
+html[data-theme="light"] .dock-sheet {
+  background: rgba(255,255,255,.98);
+}
+.dock-sheet .dock-top { margin-bottom: 8px; }
+.cart-fab {
+  pointer-events: auto;
+  position: fixed;
+  right: 16px;
+  bottom: calc(18px + env(safe-area-inset-bottom));
+  z-index: 60;
+  width: 58px;
+  height: 58px;
+  border-radius: 999px;
+  border: 0;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 1.35rem;
+  color: #fff;
+  background: linear-gradient(135deg, #3d9eff, #2b6fff);
+  box-shadow: 0 8px 24px rgba(43,111,255,.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cart-fab .fab-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #ff6b6b;
+  color: #fff;
+  font-size: .72rem;
+  font-weight: 800;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--bg);
+}
+.cart-fab .fab-badge.show { display: flex; }
+.to-top {
+  bottom: calc(88px + env(safe-area-inset-bottom)) !important;
+  right: 18px !important;
+}
+.sec-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+}
+.sec-chevron {
+  color: var(--accent);
+  font-size: .85rem;
+  flex: 0 0 auto;
+  opacity: .9;
+}
+details.sec summary {
+  list-style: none;
+}
+.cart-tip {
+  position: fixed;
+  left: 50%;
+  bottom: calc(90px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: 70;
+  max-width: min(340px, 92vw);
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(20,27,36,.96);
+  border: 1px solid var(--accent);
+  color: var(--text);
+  font-size: .88rem;
+  line-height: 1.45;
+  box-shadow: 0 8px 24px rgba(0,0,0,.35);
+  display: none;
+}
+.cart-tip.show { display: block; }
+html[data-theme="light"] .cart-tip {
+  background: #fff;
+}
+.cart-tip button {
+  margin-top: 8px;
+  width: 100%;
+  min-height: 40px;
+  border: 0;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  background: linear-gradient(135deg, #3d9eff, #2b6fff);
+  color: #fff;
+}
+
 </style>
 </head>
 <body>
@@ -477,8 +601,8 @@ html[data-theme="light"] .announce{
   </header>
 
   <div class="recent-box" id="recent-box">
-    <h2>最近選過</h2>
-    <div id="recent-list" class="recent-empty">選過的商品會出現在這裡，方便再點</div>
+    <h2>常買清單</h2>
+    <div id="recent-list" class="recent-empty">常買會留在這裡，下次打開還在，方便再點</div>
   </div>
 
   <div class="note">
@@ -526,19 +650,29 @@ html[data-theme="light"] .announce{
   </section>
 </div>
 
-<div class="dock">
+<div class="dock" id="dock">
   <div class="dock-inner">
-    <div id="cart-panel" class="cart-panel"></div>
-    <div class="dock-top">
-      <span id="cart-summary">尚未選購</span>
-      <button type="button" class="btn-sub" id="btn-toggle-cart" style="flex:0 0 auto;padding:6px 10px">明細</button>
-    </div>
-    <div class="dock-actions">
-      <button type="button" class="btn-sub" id="btn-clear">清空</button>
-      <button type="button" class="btn-main" id="btn-copy" disabled>複製下單文字</button>
-      <a class="btn-sub" id="btn-line" href="#" style="display:none">打開 LINE</a>
+    <div class="dock-sheet" id="dock-sheet" hidden>
+      <div class="dock-top">
+        <span id="cart-summary">尚未選購</span>
+        <button type="button" class="btn-sub" id="btn-close-cart" style="flex:0 0 auto;min-height:44px;padding:8px 12px">收起</button>
+      </div>
+      <div id="cart-panel" class="cart-panel open"></div>
+      <div class="dock-actions" style="margin-top:10px">
+        <button type="button" class="btn-sub" id="btn-clear">清空</button>
+        <button type="button" class="btn-main" id="btn-copy" disabled>複製下單文字</button>
+        <a class="btn-sub" id="btn-line" href="#" style="display:none">打開 LINE</a>
+      </div>
     </div>
   </div>
+</div>
+<button type="button" class="cart-fab" id="cart-fab" aria-label="打開購物車" title="購物車">
+  🛒
+  <span class="fab-badge" id="fab-badge">0</span>
+</button>
+<div class="cart-tip" id="cart-tip" role="status">
+  已加入商品。選完請點右下角 🛒 購物車，再複製給阿剛。
+  <button type="button" id="cart-tip-ok">知道了</button>
 </div>
 <button type="button" class="to-top" id="to-top" aria-label="回頂" title="回頂">↑</button>
 
@@ -576,6 +710,7 @@ const RECENT_KEY = "wv_recent_v1";
 const THEME_KEY = "wv_theme_v1";
 const SHIP_KEY = "wv_ship_v1";
 const ANNOUNCE_KEY = "wv_announce_ver";
+const CART_TIP_KEY = "wv_cart_fab_tip_v1";
 const ANNOUNCE_VER = "v1-20260811";
 const GATE_KEY = "wv_studio_gate_v1";
 
@@ -651,7 +786,7 @@ function renderRecent(){
   const list = loadRecent();
   if(!list.length){
     box.className = "recent-empty";
-    box.textContent = "選過的商品會出現在這裡，方便再點";
+    box.textContent = "常買會留在這裡，下次打開還在，方便再點";
     return;
   }
   box.className = "";
@@ -1001,7 +1136,7 @@ function setQty(item, qty){
   } else {
     state.cart.push({id:item.id, label:item.label||item.name, qty, kind:item.kind||""});
   }
-  if(qty>0) pushRecent(item);
+  if(qty>0){ pushRecent(item); showCartFabTipOnce(); }
   saveCart();
   renderApp();
 }
@@ -1098,7 +1233,7 @@ function renderJuice(app){
   app.innerHTML=secs.map(sec=>{
     const open = (state.q || wasOpen[sec]) ? "open" : "";
     return `<details class="sec" data-sec="${escapeHtml(sec)}" ${open}>
-      <summary>${escapeHtml(sec)} <span class="meta">(${bySec[sec].length})</span></summary>
+      <summary><span class="sec-summary-row"><span>${escapeHtml(sec)} <span class="meta">(${bySec[sec].length})</span></span><span class="sec-chevron">▼ 點開</span></span></summary>
       ${bySec[sec].map(rowHTML).join("")}
     </details>`;
   }).join("");
@@ -1209,17 +1344,89 @@ function renderApp(){
   if(state.tab==="gum") renderGum(app);
 }
 
-function renderDock(){
-  const n=state.cart.reduce((s,x)=>s+x.qty,0);
-  const sum=document.getElementById("cart-summary");
-  const copy=document.getElementById("btn-copy");
-  sum.textContent = n? `已選 ${n} 件（${state.cart.length} 項）` : "尚未選購";
-  copy.disabled = !n;
-  const panel=document.getElementById("cart-panel");
-  if(!state.cart.length){
-    panel.innerHTML=`<div class="empty">購物清單是空的</div>`;
+
+function isShipReady(){
+  if(!state.cart.length) return false;
+  const s = getShip();
+  if(!s.cvs || !s.pay || !s.name || !s.phone || !s.store) return false;
+  const phone = s.phone.replace(/\D/g,"");
+  if(!/^09\d{8}$/.test(phone)) return false;
+  const store = (s.store || "").trim();
+  if(!/^\d{6}$/.test(store)) return false;
+  return true;
+}
+
+function isCartSheetOpen(){
+  const sheet = document.getElementById("dock-sheet");
+  return !!(sheet && sheet.classList.contains("open"));
+}
+
+function setCartSheet(open){
+  const sheet = document.getElementById("dock-sheet");
+  if(!sheet) return;
+  if(open){
+    sheet.hidden = false;
+    sheet.classList.add("open");
   } else {
-    panel.innerHTML=state.cart.map(it=>`<div class="row">
+    sheet.classList.remove("open");
+    sheet.hidden = true;
+  }
+}
+
+function showCartFabTipOnce(){
+  let seen = false;
+  try { seen = localStorage.getItem(CART_TIP_KEY) === "1"; } catch(e) {}
+  if(seen) return;
+  const tip = document.getElementById("cart-tip");
+  if(!tip) return;
+  tip.classList.add("show");
+  const ok = document.getElementById("cart-tip-ok");
+  const hide = ()=>{
+    tip.classList.remove("show");
+    try { localStorage.setItem(CART_TIP_KEY, "1"); } catch(e) {}
+  };
+  if(ok) ok.onclick = hide;
+  setTimeout(()=>{ if(tip.classList.contains("show")) hide(); }, 8000);
+}
+
+function initCartFab(){
+  const fab = document.getElementById("cart-fab");
+  const closeBtn = document.getElementById("btn-close-cart");
+  if(fab){
+    fab.onclick = ()=> setCartSheet(!isCartSheetOpen());
+  }
+  if(closeBtn){
+    closeBtn.onclick = ()=> setCartSheet(false);
+  }
+  // ship fields refresh copy enabled state
+  ["f-cvs","f-pay","f-name","f-phone","f-store","f-note"].forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.addEventListener("input", ()=> renderDock());
+    el.addEventListener("change", ()=> renderDock());
+  });
+}
+
+function renderDock(){
+  const n = state.cart.reduce((s,x)=>s+x.qty,0);
+  const sum = document.getElementById("cart-summary");
+  const copy = document.getElementById("btn-copy");
+  const badge = document.getElementById("fab-badge");
+  if(sum) sum.textContent = n ? `已選 ${n} 件（${state.cart.length} 項）` : "尚未選購";
+  if(badge){
+    badge.textContent = String(n);
+    if(n>0) badge.classList.add("show"); else badge.classList.remove("show");
+  }
+  if(copy){
+    copy.disabled = !isShipReady();
+    copy.title = copy.disabled ? "請先選商品並填對收件資料" : "複製下單文字";
+  }
+  const panel = document.getElementById("cart-panel");
+  if(!panel) return;
+  if(!state.cart.length){
+    panel.innerHTML = `<div class="empty">購物清單是空的</div>`;
+  } else {
+    panel.innerHTML = state.cart.map(it=>`<div class="row">
       <div class="name">${escapeHtml(it.label)}</div>
       <div class="qty">
         <button type="button" data-id="${it.id}" data-act="dec">−</button>
@@ -1228,16 +1435,18 @@ function renderDock(){
       </div>
     </div>`).join("");
     panel.querySelectorAll("button").forEach(btn=>{
-      btn.onclick=()=>{
-        const id=btn.dataset.id;
-        const cur=cartQty(id);
-        const base=state.cart.find(x=>x.id===id);
-        const item={id, name:base.label, label:base.label, kind:base.kind};
-        setQty(item, btn.dataset.act==="inc"?cur+1:cur-1);
+      btn.onclick = ()=>{
+        const id = btn.dataset.id;
+        const cur = cartQty(id);
+        const base = state.cart.find(x=>x.id===id);
+        if(!base) return;
+        const item = {id, name:base.label, label:base.label, kind:base.kind};
+        setQty(item, btn.dataset.act==="inc" ? cur+1 : cur-1);
       };
     });
   }
 }
+
 
 function getShip(){
   return {
@@ -1322,6 +1531,7 @@ async function copyText(){
   }
   if(ok){
     saveShipForm();
+    setCartSheet(false);
     toast("已複製清單");
     showCopyModal();
   } else {
@@ -1335,9 +1545,7 @@ document.getElementById("btn-clear").onclick=()=>{
   if(!state.cart.length) return;
   showClearModal();
 };
-document.getElementById("btn-toggle-cart").onclick=()=>{
-  document.getElementById("cart-panel").classList.toggle("open");
-};
+
 
 const lineBtn=document.getElementById("btn-line");
 if(LINE_URL){
@@ -1354,6 +1562,7 @@ initTheme();
 initVersion();
 initStoreHint();
 initShipPersist();
+initCartFab();
 renderTabs();
 renderApp();
 renderDock();
