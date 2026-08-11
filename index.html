@@ -326,6 +326,82 @@ details.sec summary { padding: 13px 6px; }
   .model-img { width: 104px; height: 104px; }
 }
 
+
+/* P2_TAP_A11Y */
+.theme-btn, #btn-toggle-cart {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 10px 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.field a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 4px;
+  line-height: 1.3;
+}
+.tab {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 14px;
+}
+.tab .tab-badge {
+  margin-left: 6px;
+  font-size: .72rem;
+  font-weight: 700;
+  color: var(--accent);
+  background: rgba(61,158,255,.15);
+  border-radius: 999px;
+  padding: 2px 7px;
+}
+.search-hint {
+  font-size: .82rem;
+  color: var(--muted);
+  margin: -4px 0 10px;
+  line-height: 1.45;
+}
+.search-hint button {
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 2px;
+  min-height: 44px;
+}
+.confirm-modal {
+  position: fixed; inset: 0; z-index: 210;
+  display: none; align-items: center; justify-content: center;
+  background: rgba(0,0,0,.55); padding: 18px;
+}
+.confirm-modal.show { display: flex; }
+.confirm-card {
+  width: min(400px, 100%);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 22px 18px;
+  text-align: center;
+  box-shadow: 0 8px 28px rgba(0,0,0,.25);
+}
+.confirm-card h3 { margin: 0 0 8px; font-size: 1.08rem; font-weight: 800; }
+.confirm-card p { margin: 0 0 16px; color: var(--muted); font-size: .9rem; }
+.confirm-actions { display: flex; gap: 10px; }
+.confirm-actions button {
+  flex: 1; border: 0; border-radius: 12px; padding: 13px 10px;
+  font-weight: 700; cursor: pointer; min-height: 44px;
+}
+.confirm-actions .c-cancel {
+  background: var(--bar); color: var(--text); border: 1px solid var(--line) !important;
+}
+.confirm-actions .c-ok {
+  background: linear-gradient(135deg, #ff6b6b, #d64545); color: #fff;
+}
+
 </style>
 </head>
 <body>
@@ -348,8 +424,9 @@ details.sec summary { padding: 13px 6px; }
       </div>
       <button type="button" class="theme-btn" id="theme-btn" title="日夜切換">日間</button>
     </div>
-    <div class="tabs" id="tabs"></div>
-    <input class="search" id="q" type="search" placeholder="搜尋品名／口味…" />
+    <div class="tabs" id="tabs" role="tablist" aria-label="商品分類"></div>
+    <input class="search" id="q" type="search" placeholder="搜尋品名／口味…" aria-label="搜尋品名或口味" />
+    <div class="search-hint" id="search-hint" hidden></div>
   </header>
 
   <div class="recent-box" id="recent-box">
@@ -379,15 +456,15 @@ details.sec summary { padding: 13px 6px; }
   <section class="card" id="ship-fields">
     <h2>收件資料 <span style="color:#ff6b6b;font-size:.85rem">*必填</span></h2>
     <p style="margin:0 0 8px;color:var(--muted);font-size:.82rem">除備註外皆必填，才可複製清單</p>
-    <div class="field"><label>超商 *</label>
+    <div class="field"><label for="f-cvs">超商 *</label>
       <select id="f-cvs"><option value="">請選擇</option><option>7-11</option><option>全家</option></select>
     </div>
-    <div class="field"><label>付款 *</label>
+    <div class="field"><label for="f-pay">付款 *</label>
       <select id="f-pay"><option value="">請選擇</option><option>到付</option><option>匯款</option></select>
     </div>
-    <div class="field"><label>姓名 *</label><input id="f-name" placeholder="與證件相同" /></div>
-    <div class="field"><label>手機 *</label><input id="f-phone" inputmode="tel" placeholder="09xxxxxxxx" /></div>
-    <div class="field"><label>門市店號 *</label>
+    <div class="field"><label for="f-name">姓名 *</label><input id="f-name" placeholder="與證件相同" /></div>
+    <div class="field"><label for="f-phone">手機 *</label><input id="f-phone" inputmode="tel" placeholder="09xxxxxxxx" /></div>
+    <div class="field"><label for="f-store">門市店號 *</label>
       <input id="f-store" placeholder="優先 6 碼數字店號" inputmode="numeric" autocomplete="off" />
       <p class="field-hint" id="store-hint">超商店號多為 6 碼數字；不確定請用下方連結查</p>
       <div style="margin-top:6px;font-size:.82rem;line-height:1.5">
@@ -397,7 +474,7 @@ details.sec summary { padding: 13px 6px; }
         <a href="https://www.family.com.tw/Marketing/inquiry.aspx" target="_blank" rel="noopener">全家 店舖查詢</a>
       </div>
     </div>
-    <div class="field"><label>備註（選填）</label><textarea id="f-note" rows="2" placeholder="例如：口味備註…"></textarea></div>
+    <div class="field"><label for="f-note">備註（選填）</label><textarea id="f-note" rows="2" placeholder="例如：口味備註…"></textarea></div>
     <p id="ship-err" style="display:none;color:#ff6b6b;font-size:.85rem;margin:6px 0 0"></p>
   </section>
 </div>
@@ -418,13 +495,25 @@ details.sec summary { padding: 13px 6px; }
 </div>
 <button type="button" class="to-top" id="to-top" aria-label="回頂" title="回頂">↑</button>
 
-<div class="copy-modal" id="copy-modal" aria-hidden="true">
+<div class="copy-modal" id="copy-modal" role="dialog" aria-modal="true" aria-labelledby="copy-modal-title" aria-hidden="true">
   <div class="copy-card">
-    <h3>已複製清單</h3>
+    <h3 id="copy-modal-title">已複製清單</h3>
     <p>請打開 LINE，貼給阿剛。<br/>本頁不結帳，現貨由阿剛確認。</p>
     <div class="rowbtns">
       <a class="c-main" id="copy-open-line" href="#" target="_blank" rel="noopener">打開 LINE 貼給阿剛</a>
       <button type="button" class="c-sub" id="copy-modal-ok">知道了</button>
+    </div>
+  </div>
+</div>
+
+
+<div class="confirm-modal" id="clear-modal" role="dialog" aria-modal="true" aria-labelledby="clear-modal-title" aria-hidden="true">
+  <div class="confirm-card">
+    <h3 id="clear-modal-title">清空已選清單？</h3>
+    <p>清空後可再重新勾選，收件資料仍會保留。</p>
+    <div class="confirm-actions">
+      <button type="button" class="c-cancel" id="clear-cancel">取消</button>
+      <button type="button" class="c-ok" id="clear-ok">確定清空</button>
     </div>
   </div>
 </div>
@@ -661,8 +750,144 @@ const state = {
   q: ""
 };
 
+
+function buildCatalogIndex(){
+  const byId = {};
+  const add = (it, tab)=>{
+    if(!it || !it.id) return;
+    byId[it.id] = {
+      id: it.id,
+      name: it.name || it.label || "",
+      label: it.name || it.label || "",
+      kind: it.kind || "",
+      tab: tab
+    };
+  };
+  (DATA.juice||[]).forEach(it=>add(it,"juice"));
+  (DATA.open_models||[]).forEach(m=>{
+    (m.hosts||[]).forEach(h=>add({...h, kind:h.kind||"open_host"},"open"));
+    (m.parts||[]).forEach(p=>add({...p, kind:p.kind||"open_part"},"open"));
+  });
+  const c = DATA.closed || {};
+  (c.relx_hosts||[]).forEach(it=>add(it,"closed"));
+  (c.relx_pods||[]).forEach(it=>add(it,"closed"));
+  (c.mh_hosts||[]).forEach(it=>add(it,"closed"));
+  (c.mh_pods||[]).forEach(it=>add(it,"closed"));
+  (DATA.disposable||[]).forEach(it=>add(it,"disp"));
+  (DATA.gum||[]).forEach(it=>add(it,"gum"));
+  return byId;
+}
+const CATALOG_BY_ID = buildCatalogIndex();
+
+function sanitizeCart(list){
+  const out = [];
+  let removed = 0;
+  (list||[]).forEach(it=>{
+    if(!it || !it.id) { removed++; return; }
+    const cur = CATALOG_BY_ID[it.id];
+    if(!cur){ removed++; return; }
+    out.push({
+      id: cur.id,
+      label: cur.label || cur.name,
+      qty: Math.max(1, Math.min(99, it.qty|0)),
+      kind: cur.kind || it.kind || ""
+    });
+  });
+  return {list: out, removed};
+}
+
+function countTabMatches(tabId, q){
+  const qq = (q||"").trim().toLowerCase();
+  if(!qq) return 0;
+  let n = 0;
+  const hit = (s)=> (s||"").toLowerCase().includes(qq);
+  if(tabId==="juice"){
+    (DATA.juice||[]).forEach(it=>{ if(hit(it.name+" "+it.section)) n++; });
+  } else if(tabId==="open"){
+    (DATA.open_models||[]).forEach(m=>{
+      (m.hosts||[]).forEach(h=>{ if(hit(m.model+" "+h.name+" "+(h.color||""))) n++; });
+      (m.parts||[]).forEach(p=>{ if(hit(m.model+" "+p.name+" "+(p.part_type||""))) n++; });
+    });
+  } else if(tabId==="closed"){
+    const c=DATA.closed||{};
+    ["relx_hosts","relx_pods","mh_hosts","mh_pods"].forEach(k=>{
+      (c[k]||[]).forEach(x=>{ if(hit((x.name||"")+" "+(x.flavor||""))) n++; });
+    });
+  } else if(tabId==="disp"){
+    (DATA.disposable||[]).forEach(x=>{ if(hit(x.name+" "+x.series+" "+x.flavor)) n++; });
+  } else if(tabId==="gum"){
+    (DATA.gum||[]).forEach(x=>{ if(hit(x.name+" "+x.flavor)) n++; });
+  }
+  return n;
+}
+
+function renderSearchHint(){
+  const el = document.getElementById("search-hint");
+  if(!el) return;
+  const q = state.q.trim();
+  if(!q){ el.hidden = true; el.innerHTML=""; return; }
+  const tabs = [["juice","小果汁"],["open","主機耗材"],["closed","封閉式"],["disp","拋棄式"],["gum","口嚼錠"]];
+  const parts = [];
+  tabs.forEach(([id,name])=>{
+    const n = countTabMatches(id, q);
+    if(n>0 && id !== state.tab) parts.push({id, name, n});
+  });
+  const here = countTabMatches(state.tab, q);
+  if(!parts.length){
+    if(here===0){
+      el.hidden = false;
+      el.textContent = "目前分類沒有「"+q+"」，其他分類也沒有";
+    } else {
+      el.hidden = true;
+      el.innerHTML = "";
+    }
+    return;
+  }
+  el.hidden = false;
+  el.innerHTML = "其他分類也有「"+escapeHtml(q)+"」： " + parts.map(p=>
+    `<button type="button" data-jump="${p.id}">${p.name} ${p.n}</button>`
+  ).join(" · ");
+  el.querySelectorAll("button[data-jump]").forEach(b=>{
+    b.onclick = ()=>{
+      state.tab = b.getAttribute("data-jump");
+      renderTabs();
+      renderApp();
+      renderSearchHint();
+    };
+  });
+}
+
+function showClearModal(){
+  const modal = document.getElementById("clear-modal");
+  if(!modal) return;
+  modal.classList.add("show");
+  modal.setAttribute("aria-hidden","false");
+  const close = ()=>{
+    modal.classList.remove("show");
+    modal.setAttribute("aria-hidden","true");
+  };
+  const ok = document.getElementById("clear-ok");
+  const cancel = document.getElementById("clear-cancel");
+  if(cancel) cancel.onclick = close;
+  if(ok) ok.onclick = ()=>{
+    state.cart = [];
+    saveCart();
+    renderApp();
+    renderRecent();
+    close();
+    toast("已清空清單");
+  };
+  modal.onclick = (e)=>{ if(e.target===modal) close(); };
+}
+
 function loadCart(){
-  try { return JSON.parse(localStorage.getItem(LS_KEY)||"[]"); } catch(e){ return []; }
+  let raw = [];
+  try { raw = JSON.parse(localStorage.getItem(LS_KEY)||"[]"); } catch(e){ raw = []; }
+  const {list, removed} = sanitizeCart(raw);
+  if(removed>0){
+    try { localStorage.setItem(LS_KEY, JSON.stringify(list)); } catch(e) {}
+  }
+  return list;
 }
 function saveCart(){
   localStorage.setItem(LS_KEY, JSON.stringify(state.cart));
@@ -709,10 +934,19 @@ function tabs(){
 
 function renderTabs(){
   const el=document.getElementById("tabs");
-  el.innerHTML=tabs().map(([id,name])=>
-    `<button type="button" class="tab ${state.tab===id?"active":""}" data-tab="${id}">${name}</button>`
-  ).join("");
-  el.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{state.tab=b.dataset.tab; renderApp(); renderTabs();});
+  const q = state.q.trim();
+  el.innerHTML=tabs().map(([id,name])=>{
+    const n = q ? countTabMatches(id, q) : 0;
+    const badge = (q && n>0) ? `<span class="tab-badge">${n}</span>` : "";
+    const sel = state.tab===id ? "true" : "false";
+    return `<button type="button" class="tab ${state.tab===id?"active":""}" role="tab" aria-selected="${sel}" data-tab="${id}">${name}${badge}</button>`;
+  }).join("");
+  el.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{
+    state.tab=b.dataset.tab;
+    renderTabs();
+    renderApp();
+    renderSearchHint();
+  });
 }
 
 function matchQ(text){
@@ -1011,11 +1245,11 @@ async function copyText(){
   }
 }
 
-document.getElementById("q").addEventListener("input", e=>{state.q=e.target.value; renderApp();});
+document.getElementById("q").addEventListener("input", e=>{state.q=e.target.value; renderTabs(); renderApp(); renderSearchHint();});
 document.getElementById("btn-copy").onclick=copyText;
 document.getElementById("btn-clear").onclick=()=>{
   if(!state.cart.length) return;
-  if(confirm("清空已選清單？")){ state.cart=[]; saveCart(); renderApp(); }
+  showClearModal();
 };
 document.getElementById("btn-toggle-cart").onclick=()=>{
   document.getElementById("cart-panel").classList.toggle("open");
