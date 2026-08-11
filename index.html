@@ -1210,18 +1210,29 @@ function bindRows(root, itemMap){
   });
 }
 
+
+function collectOpenSecs(app){
+  const wasOpen = {};
+  if(!app) return wasOpen;
+  app.querySelectorAll("details.sec").forEach(d=>{
+    const key = d.getAttribute("data-sec") || "";
+    if(key && d.open) wasOpen[key] = true;
+  });
+  return wasOpen;
+}
+
+function detailsBlock(secKey, titleHtml, bodyHtml, open){
+  const op = open ? "open" : "";
+  return `<details class="sec" data-sec="${escapeHtml(secKey)}" ${op}>
+    <summary><span class="sec-summary-row"><span>${titleHtml}</span><span class="sec-chevron">▼ 點開</span></span></summary>
+    ${bodyHtml}
+  </details>`;
+}
+
 function renderJuice(app){
   const map={};
   const bySec={};
-  // keep which <details> were open before rewrite
-  const wasOpen = {};
-  app.querySelectorAll("details.sec").forEach(d=>{
-    const sum = d.querySelector("summary");
-    if(!sum) return;
-    // summary text without count
-    const key = (sum.childNodes[0] && sum.childNodes[0].textContent || sum.textContent || "").replace(/\s*\(\d+\)\s*$/,"").trim();
-    if(d.open) wasOpen[key] = true;
-  });
+  const wasOpen = collectOpenSecs(app);
   DATA.juice.forEach(it=>{
     if(!matchQ(it.name+" "+it.section)) return;
     const item={id:it.id, name:it.name, label:it.name, kind:"juice", meta:it.section};
@@ -1241,62 +1252,76 @@ function renderJuice(app){
 }
 
 function renderOpen(app){
-  const map={};
-  let html="";
+  const map = {};
+  const wasOpen = collectOpenSecs(app);
+  let html = "";
+  let any = false;
   DATA.open_models.forEach(m=>{
-    const hosts=m.hosts.filter(h=>matchQ(m.model+" "+h.name+" "+h.color));
-    const parts=m.parts.filter(p=>matchQ(m.model+" "+p.name+" "+p.part_type));
-    if(!hosts.length && !parts.length && state.q) return;
-    html += `<div class="card"><div class="model-head">
+    const hosts = m.hosts.filter(h=>matchQ(m.model+" "+h.name+" "+(h.color||"")));
+    const parts = m.parts.filter(p=>matchQ(m.model+" "+p.name+" "+(p.part_type||"")));
+    if(!hosts.length && !parts.length){
+      if(state.q) return;
+    }
+    any = true;
+    let body = "";
+    // compact head inside fold
+    body += `<div class="model-head" style="margin:8px 0 10px">
       ${m.image?`<img class="model-img" src="${escapeHtml(m.image)}" alt="${escapeHtml(m.model)}" loading="lazy" />`:`<div class="model-img ph">暫無圖</div>`}
-      <div><h2 style="margin:0">${escapeHtml(m.model)}</h2>
-      </div>
+      <div><div class="meta">點開選顏色／耗材</div></div>
     </div>`;
-        if(hosts.length){
-      html += `<div class="sec-title">主機顏色</div>`;
+    if(hosts.length){
+      body += `<div class="sec-title">主機顏色</div>`;
       hosts.forEach(h=>{
         const item={id:h.id, name:h.name, label:h.name, kind:"open_host", meta:m.model};
         map[h.id]=item;
-        html += rowHTML(item);
+        body += rowHTML(item);
       });
     }
     if(parts.length){
-      html += `<div class="sec-title" style="margin-top:10px">耗材（空彈／芯等）</div>`;
+      body += `<div class="sec-title" style="margin-top:10px">耗材（空彈／芯等）</div>`;
       parts.forEach(p=>{
-        const item={id:p.id, name:p.name, label:p.name, kind:"open_part", meta:m.model+" · "+p.part_type};
+        const item={id:p.id, name:p.name, label:p.name, kind:"open_part", meta:m.model+" · "+(p.part_type||"耗材")};
         map[p.id]=item;
-        html += rowHTML(item);
+        body += rowHTML(item);
       });
     }
-    html += `</div>`;
+    if(!hosts.length && !parts.length){
+      body += `<div class="empty">此型號暫無符合項目</div>`;
+    }
+    const title = `${escapeHtml(m.model)} <span class="meta">(${hosts.length+parts.length})</span>`;
+    const open = !!(state.q || wasOpen[m.model]);
+    html += detailsBlock(m.model, title, body, open);
   });
-  app.innerHTML=html || `<div class="empty">找不到主機／耗材</div>`;
+  app.innerHTML = html || `<div class="empty">找不到主機／耗材</div>`;
   bindRows(app, map);
 }
 
 function renderClosed(app){
-  const map={};
+  const map = {};
+  const wasOpen = collectOpenSecs(app);
   const ci = DATA.closed_images || {};
   let banners = "";
   if(ci.relx) banners += `<div class="closed-banner"><img src="${escapeHtml(ci.relx)}" alt="RELX" loading="lazy" /><div><strong>RELX 5代</strong></div></div>`;
   if(ci.mh) banners += `<div class="closed-banner"><img src="${escapeHtml(ci.mh)}" alt="MH" loading="lazy" /><div><strong>MH魔盒</strong></div></div>`;
-  const groups=[
+  const groups = [
     ["RELX 5代主機", DATA.closed.relx_hosts],
     ["RELX 5代彈", DATA.closed.relx_pods],
     ["MH魔盒主機", DATA.closed.mh_hosts],
     ["MH魔盒彈", DATA.closed.mh_pods],
   ];
-  let html="";
+  let html = "";
   groups.forEach(([title, list])=>{
-    const items=list.filter(x=>matchQ(title+" "+x.name+" "+(x.flavor||"")));
+    const items = (list||[]).filter(x=>matchQ(title+" "+x.name+" "+(x.flavor||"")));
     if(!items.length) return;
-    html += `<div class="card"><h2>${escapeHtml(title)}</h2>`;
+    let body = "";
     items.forEach(x=>{
       const item={id:x.id, name:x.name, label:x.name, kind:x.kind, meta:x.flavor||title};
       map[x.id]=item;
-      html += rowHTML(item);
+      body += rowHTML(item);
     });
-    html += `</div>`;
+    const open = !!(state.q || wasOpen[title]);
+    const th = `${escapeHtml(title)} <span class="meta">(${items.length})</span>`;
+    html += detailsBlock(title, th, body, open);
   });
   if(!html){
     app.innerHTML = (banners||"") + `<div class="empty">找不到商品</div>`;
@@ -1307,16 +1332,26 @@ function renderClosed(app){
 }
 
 function renderDisp(app){
-  const map={};
-  const by={};
+  const map = {};
+  const wasOpen = collectOpenSecs(app);
+  const by = {};
   DATA.disposable.forEach(x=>{
     if(!matchQ(x.name+" "+x.series+" "+x.flavor)) return;
     const item={id:x.id, name:x.name, label:x.name, kind:"disposable", meta:x.series};
     map[x.id]=item;
     (by[x.series||"其他"]=by[x.series||"其他"]||[]).push(item);
   });
-  app.innerHTML=Object.keys(by).map(sec=>`<div class="card"><h2>${escapeHtml(sec)}</h2>${by[sec].map(rowHTML).join("")}</div>`).join("")
-    || `<div class="empty">找不到拋棄式</div>`;
+  const secs = Object.keys(by);
+  if(!secs.length){
+    app.innerHTML = `<div class="empty">找不到拋棄式</div>`;
+    return;
+  }
+  app.innerHTML = secs.map(sec=>{
+    const open = !!(state.q || wasOpen[sec]);
+    const title = `${escapeHtml(sec)} <span class="meta">(${by[sec].length})</span>`;
+    const body = by[sec].map(rowHTML).join("");
+    return detailsBlock(sec, title, body, open);
+  }).join("");
   bindRows(app, map);
 }
 
