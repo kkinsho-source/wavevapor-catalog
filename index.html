@@ -1576,7 +1576,7 @@ function renderDisp(app){
     const img = imgOf(sec);
     let body = `<div class="model-head" style="margin:8px 0 10px">
       ${img?`<img class="model-img" src="${escapeHtml(img)}" alt="${escapeHtml(sec)}" loading="lazy" />`:`<div class="model-img ph">暫無圖</div>`}
-      <div><div class="meta">點開選口味（整支拋棄式）</div></div>
+      <div><div class="meta">點開選口味</div></div>
     </div>`;
     body += `<div class="sec-title">口味</div>`;
     body += items.map(rowHTML).join("");
