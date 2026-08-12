@@ -1494,42 +1494,70 @@ function renderClosed(app){
   const map = {};
   const wasOpen = collectOpenSecs(app);
   const ci = DATA.closed_images || {};
-  let banners = "";
-  const brandCards = [];
-  if(ci.relx) brandCards.push(`<div class="closed-banner"><img src="${escapeHtml(ci.relx)}" alt="RELX" loading="lazy" /><strong>RELX 5代</strong></div>`);
-  if(ci.mh) brandCards.push(`<div class="closed-banner"><img src="${escapeHtml(ci.mh)}" alt="MH" loading="lazy" /><strong>MH魔盒</strong></div>`);
-  if(brandCards.length) banners = `<div class="closed-brands">${brandCards.join("")}</div>`;
-  const groups = [
-    ["RELX 5代主機", DATA.closed.relx_hosts],
-    ["RELX 5代彈", DATA.closed.relx_pods],
-    ["MH魔盒主機", DATA.closed.mh_hosts],
-    ["MH魔盒彈", DATA.closed.mh_pods],
+  // 跟主機耗材同一套：一品牌一摺疊 → 圖 + 主機 + 彈
+  const brands = [
+    {
+      key: "RELX 5代",
+      image: ci.relx || "",
+      hint: "先選主機顏色，再選彈口味",
+      sections: [
+        ["主機顏色", DATA.closed.relx_hosts],
+        ["彈（口味）", DATA.closed.relx_pods],
+      ],
+    },
+    {
+      key: "MH魔盒",
+      image: ci.mh || "",
+      hint: "先選主機顏色，再選彈口味",
+      sections: [
+        ["主機顏色", DATA.closed.mh_hosts],
+        ["彈（口味）", DATA.closed.mh_pods],
+      ],
+    },
   ];
   let html = "";
-  groups.forEach(([title, list])=>{
-    const items = (list||[]).filter(x=>matchQ(title+" "+x.name+" "+(x.flavor||"")));
-    if(!items.length) return;
+  brands.forEach(b=>{
+    let total = 0;
     let body = "";
-    items.forEach(x=>{
-      const item={id:x.id, name:x.name, label:x.name, kind:x.kind, meta:x.flavor||title};
-      map[x.id]=item;
-      body += rowHTML(item);
+    body += `<div class="model-head" style="margin:8px 0 10px">
+      ${b.image?`<img class="model-img" src="${escapeHtml(b.image)}" alt="${escapeHtml(b.key)}" loading="lazy" />`:`<div class="model-img ph">暫無圖</div>`}
+      <div><div class="meta">${escapeHtml(b.hint)}</div></div>
+    </div>`;
+    b.sections.forEach(([secTitle, list], idx)=>{
+      const items = (list||[]).filter(x=>matchQ(b.key+" "+secTitle+" "+x.name+" "+(x.flavor||"")));
+      if(!items.length) return;
+      total += items.length;
+      body += `<div class="sec-title" style="${idx? "margin-top:10px":""}">${escapeHtml(secTitle)}</div>`;
+      items.forEach(x=>{
+        const item={id:x.id, name:x.name, label:x.name, kind:x.kind, meta:x.flavor||secTitle};
+        map[x.id]=item;
+        body += rowHTML(item);
+      });
     });
-    const open = !!(state.q || wasOpen[title]);
-    const th = `${escapeHtml(title)} <span class="meta">(${items.length})</span>`;
-    html += detailsBlock(title, th, body, open);
+    if(!total){
+      if(state.q) return;
+      body += `<div class="empty">此系列暫無符合項目</div>`;
+    }
+    const title = `${escapeHtml(b.key)} <span class="meta">(${total})</span>`;
+    const open = !!(state.q || wasOpen[b.key]);
+    html += detailsBlock(b.key, title, body, open);
   });
-  if(!html){
-    app.innerHTML = (banners||"") + `<div class="empty">找不到商品</div>`;
-  } else {
-    app.innerHTML = (banners||"") + html;
-  }
+  app.innerHTML = html || `<div class="empty">找不到商品</div>`;
   bindRows(app, map);
 }
 
 function renderDisp(app){
   const map = {};
   const wasOpen = collectOpenSecs(app);
+  const di = DATA.disposable_images || {};
+  // 系列名 → 圖（對齊自拍檔）
+  const imgOf = (series)=>{
+    const s = (series||"").toLowerCase();
+    if(s.includes("go12")) return di.go12k || "";
+    if(s.includes("ga8") || s.includes("magicgo") || s.includes("ga8000")) return di.ga8h || "";
+    if(s.includes("dotplus") || s.includes("dot plus")) return di.dotplus || "";
+    return "";
+  };
   const by = {};
   DATA.disposable.forEach(x=>{
     if(!matchQ(x.name+" "+x.series+" "+x.flavor)) return;
@@ -1537,21 +1565,23 @@ function renderDisp(app){
     map[x.id]=item;
     (by[x.series||"其他"]=by[x.series||"其他"]||[]).push(item);
   });
-  const di = DATA.disposable_images || {};
-  const brandCards = [];
-  if(di.go12k) brandCards.push(`<div class="closed-banner"><img src="${escapeHtml(di.go12k)}" alt="GO12K" loading="lazy" /><strong>RELX GO12K</strong></div>`);
-  if(di.ga8h) brandCards.push(`<div class="closed-banner"><img src="${escapeHtml(di.ga8h)}" alt="GA8H" loading="lazy" /><strong>RELX GA8H</strong></div>`);
-  if(di.dotplus) brandCards.push(`<div class="closed-banner"><img src="${escapeHtml(di.dotplus)}" alt="dotPlus" loading="lazy" /><strong>dotPlus</strong></div>`);
-  const banners = brandCards.length ? `<div class="closed-brands">${brandCards.join("")}</div>` : "";
   const secs = Object.keys(by);
   if(!secs.length){
-    app.innerHTML = (banners||"") + `<div class="empty">找不到拋棄式</div>`;
+    app.innerHTML = `<div class="empty">找不到拋棄式</div>`;
     return;
   }
-  app.innerHTML = (banners||"") + secs.map(sec=>{
+  // 跟主機耗材同一套：一系列一摺疊 → 圖 + 口味列表
+  app.innerHTML = secs.map(sec=>{
+    const items = by[sec];
+    const img = imgOf(sec);
+    let body = `<div class="model-head" style="margin:8px 0 10px">
+      ${img?`<img class="model-img" src="${escapeHtml(img)}" alt="${escapeHtml(sec)}" loading="lazy" />`:`<div class="model-img ph">暫無圖</div>`}
+      <div><div class="meta">點開選口味（整支拋棄式）</div></div>
+    </div>`;
+    body += `<div class="sec-title">口味</div>`;
+    body += items.map(rowHTML).join("");
     const open = !!(state.q || wasOpen[sec]);
-    const title = `${escapeHtml(sec)} <span class="meta">(${by[sec].length})</span>`;
-    const body = by[sec].map(rowHTML).join("");
+    const title = `${escapeHtml(sec)} <span class="meta">(${items.length})</span>`;
     return detailsBlock(sec, title, body, open);
   }).join("");
   bindRows(app, map);
