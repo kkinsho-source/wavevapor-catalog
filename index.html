@@ -1503,32 +1503,39 @@ function renderOpen(app){
     return detailsBlock(m.model, title, body, open);
   };
   const groups = {"": []};
-  const order = ["", "dotmod Kit", "其他主機耗材"];
   (DATA.open_models||[]).forEach(m=>{
     const g = m.group || "";
     if(!groups[g]) groups[g] = [];
     groups[g].push(m);
   });
-  let html = "";
-  order.forEach(g=>{
-    const list = groups[g] || [];
-    if(!list.length) return;
-    if(!g){
-      const inner = list.map(m=>renderOne(m,false)).filter(Boolean).join("");
-      if(inner) html += inner;
-      return;
-    }
+  const isDotSeries = (name)=>{
+    const n = name||"";
+    if(/^dotPod /i.test(n) || n.indexOf("dotPod")===0) return true;
+    if(/AIO v3/i.test(n) || /AIO V3/i.test(n)) return true;
+    if(/Apollo/i.test(n)) return true;
+    if(n==="dotAMP" || /dotAMP/i.test(n)) return true;
+    return false;
+  };
+  const emitGroup = (g, list)=>{
+    if(!list || !list.length) return "";
+    if(!g) return list.map(m=>renderOne(m,false)).filter(Boolean).join("");
     const flat = list.length===1 && (list[0].model||"")===g;
     const inner = list.map(m=>renderOne(m, flat)).filter(Boolean).join("");
-    if(!inner) return;
+    if(!inner) return "";
     const open = !!(state.q || wasOpen["grp:"+g]);
-    html += detailsBlock("grp:"+g, `${escapeHtml(g)}`, inner, open);
-  });
+    return detailsBlock("grp:"+g, `${escapeHtml(g)}`, inner, open);
+  };
+  const ungrouped = groups[""] || [];
+  const before = ungrouped.filter(m=>isDotSeries(m.model));
+  const after = ungrouped.filter(m=>!isDotSeries(m.model));
+  let html = "";
+  html += emitGroup("", before);
+  html += emitGroup("dotmod Kit", groups["dotmod Kit"] || []);
+  html += emitGroup("", after);
+  html += emitGroup("其他主機耗材", groups["其他主機耗材"] || []);
   Object.keys(groups).forEach(g=>{
-    if(order.indexOf(g)>=0) return;
-    const inner = groups[g].map(renderOne).filter(Boolean).join("");
-    if(!inner) return;
-    html += detailsBlock("grp:"+g, `${escapeHtml(g)}`, inner, !!(state.q || wasOpen["grp:"+g]));
+    if(!g || g==="dotmod Kit" || g==="其他主機耗材") return;
+    html += emitGroup(g, groups[g]);
   });
   app.innerHTML = html || `<div class="empty">找不到主機／耗材</div>`;
   bindRows(app, map);
