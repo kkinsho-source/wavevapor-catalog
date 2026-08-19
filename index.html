@@ -102,8 +102,8 @@ body.unlocked #main[hidden]{display:block !important}
 .closed-banner{display:flex;gap:12px;align-items:center;margin-bottom:10px}
 .closed-banner img{width:72px;height:72px;object-fit:contain;border-radius:10px;background:#0f1620;border:1px solid var(--line)}
 
-.to-top{position:fixed;right:14px;bottom:calc(88px + env(safe-area-inset-bottom));z-index:45;width:44px;height:44px;border-radius:999px;border:1px solid var(--line);background:rgba(20,27,36,.92);color:#fff;font-size:1.15rem;font-weight:700;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,.35);backdrop-filter:blur(6px)}
-.to-top.show{display:flex}
+.to-top{position:fixed;right:18px;bottom:calc(154px + env(safe-area-inset-bottom));z-index:70;width:46px;height:46px;border-radius:999px;border:1px solid var(--line);background:rgba(20,27,36,.92);color:#fff;font-size:1.15rem;font-weight:700;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,.35);backdrop-filter:blur(6px)}
+.to-top.show,body.unlocked .to-top.show{display:flex !important}
 
 
 html[data-theme="light"]{
@@ -435,8 +435,9 @@ html[data-theme="light"] .announce{background:transparent}
   box-shadow:0 6px 18px rgba(0,0,0,.35)}
 body.unlocked .note-fab{display:flex}
 body.announce-on .note-fab{display:none}
-/* NOTE_FAB_STACK_V1: 🛒 → ⚠ → ↑ */
-.to-top{bottom:calc(144px + env(safe-area-inset-bottom)) !important;right:18px !important}
+/* NOTE_FAB_STACK_V1: 🛒 → ⚠ → ↑ 置頂必須在叮嚀上面、可點 */
+.to-top{bottom:calc(154px + env(safe-area-inset-bottom)) !important;right:18px !important;z-index:70 !important}
+body.announce-on .to-top.show{display:flex !important}
 
 
 /* CART_FAB_UI */
@@ -999,7 +1000,7 @@ function initToTop(){
   const btn = document.getElementById("to-top");
   if(!btn) return;
   const onScroll = ()=>{
-    if(window.scrollY > 280) btn.classList.add("show");
+    if(window.scrollY > 80) btn.classList.add("show");
     else btn.classList.remove("show");
   };
   window.addEventListener("scroll", onScroll, {passive:true});
