@@ -434,7 +434,8 @@ html[data-theme="light"] .announce{background:rgba(0,0,0,.25)}
   box-shadow:0 6px 18px rgba(0,0,0,.35)}
 body.unlocked .note-fab{display:flex}
 body.announce-on .note-fab{display:none}
-.to-top{bottom:calc(142px + env(safe-area-inset-bottom)) !important;right:18px !important}
+/* NOTE_FAB_STACK_V1: 🛒 → ⚠ → ↑ */
+.to-top{bottom:calc(144px + env(safe-area-inset-bottom)) !important;right:18px !important}
 
 
 /* CART_FAB_UI */
@@ -559,7 +560,7 @@ html[data-theme="light"] .juice-subs .subtab.active { background: #e8eef8; }
   padding: 4px 2px;
 }
 .to-top {
-  bottom: calc(88px + env(safe-area-inset-bottom)) !important;
+  bottom: calc(144px + env(safe-area-inset-bottom)) !important;
   right: 18px !important;
 }
 .sec-summary-row {
