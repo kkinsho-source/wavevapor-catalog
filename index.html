@@ -403,14 +403,14 @@ details.sec summary { padding: 13px 6px; }
 }
 
 
-/* NOTE_FAB_V1 — 叮嚀不擋清單 */
-.announce{position:fixed;left:12px;right:78px;bottom:calc(88px + env(safe-area-inset-bottom));
-  top:auto;z-index:81;display:none;align-items:stretch;justify-content:stretch;
-  background:transparent;padding:0;pointer-events:none}
+/* NOTE_FAB_V1 — 叮嚀右下小卡，不拉滿螢幕 */
+.announce{position:fixed;left:auto;right:78px;width:min(360px,calc(100vw - 96px));
+  bottom:calc(88px + env(safe-area-inset-bottom));top:auto;z-index:81;display:none;
+  align-items:stretch;justify-content:stretch;background:transparent;padding:0;pointer-events:none}
 body.announce-on #gate{display:none !important}
 body.announce-on #announce{display:flex !important}
 body.announce-on #main{display:block !important}
-.announce-card{width:100%;max-height:min(58vh,480px);overflow:auto;pointer-events:auto;
+.announce-card{width:100%;max-height:min(52vh,420px);overflow:auto;pointer-events:auto;
   background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px 18px 18px;
   box-shadow:0 10px 32px rgba(0,0,0,.35)}
 .announce-card h2{margin:0 0 12px;font-size:1.15rem;font-weight:800;text-align:center;line-height:1.35}
@@ -425,7 +425,7 @@ body.announce-on #main{display:block !important}
 .announce-card .a-go{width:100%;margin-top:16px;border:0;border-radius:14px;padding:14px 12px;
   font-weight:800;font-size:.95rem;cursor:pointer;min-height:48px;
   background:linear-gradient(135deg,#3d9eff,#2b6fff);color:#fff}
-html[data-theme="light"] .announce{background:rgba(0,0,0,.25)}
+html[data-theme="light"] .announce{background:transparent}
 .note-fab{
   pointer-events:auto;position:fixed;right:18px;
   bottom:calc(86px + env(safe-area-inset-bottom));z-index:55;
