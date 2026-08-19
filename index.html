@@ -1501,6 +1501,22 @@ function collectOpenSecs(app){
   return wasOpen;
 }
 
+function bindAccordion(app){
+  /* ACCORDION_SECS_V1 */
+  if(!app) return;
+  app.querySelectorAll("details.sec").forEach(d=>{
+    d.addEventListener("toggle", function(){
+      if(!d.open) return;
+      if(state.q) return;
+      const parent = d.parentElement;
+      if(!parent) return;
+      parent.querySelectorAll(":scope > details.sec").forEach(sib=>{
+        if(sib !== d && sib.open) sib.open = false;
+      });
+    });
+  });
+}
+
 function detailsBlock(secKey, titleHtml, bodyHtml, open){
   const op = open ? "open" : "";
   return `<details class="sec" data-sec="${escapeHtml(secKey)}" ${op}>
@@ -1563,6 +1579,7 @@ function renderJuice(app){
     b.onclick = ()=> setJuiceSize(b.getAttribute("data-jsz"));
   });
   bindRows(app, map);
+  bindAccordion(app);
 }
 
 function renderOpen(app){
@@ -1640,6 +1657,7 @@ function renderOpen(app){
   });
   app.innerHTML = html || `<div class="empty">找不到主機／耗材</div>`;
   bindRows(app, map);
+  bindAccordion(app);
 }
 
 function renderClosed(app){
@@ -1696,6 +1714,7 @@ function renderClosed(app){
   });
   app.innerHTML = html || `<div class="empty">找不到商品</div>`;
   bindRows(app, map);
+  bindAccordion(app);
 }
 
 function renderDisp(app){
@@ -1737,6 +1756,7 @@ function renderDisp(app){
     return detailsBlock(sec, title, body, open);
   }).join("");
   bindRows(app, map);
+  bindAccordion(app);
 }
 
 function renderGum(app){
