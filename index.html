@@ -723,22 +723,6 @@ html[data-theme="light"] .closed-banner img{
     有貨會安排開單；缺貨／要改顏色或彈規，阿剛會再跟您確認。
   </div>
 
-  <!-- FIRST_FOLD_V1 -->
-  <details class="howto" id="howto">
-    <summary>
-      <span class="sec-summary-row">
-        <span><strong>網站使用教學 1 2 3</strong></span>
-        <span class="sec-chevron">▼ 點開</span>
-      </span>
-    </summary>
-    <ol>
-      <li>上面分類找商品，按「加入」調數量</li>
-      <li>打開右下角 🛒，填超商／交付／姓名電話店號</li>
-      <li>按「複製清單文字」→ 貼 LINE 給阿剛</li>
-    </ol>
-    <p class="tip">※ 本頁只產生清單；現貨由阿剛確認後再安排</p>
-  </details>
-
   <div id="app"></div>
 </div>
 
@@ -834,9 +818,7 @@ const GATE_KEY = "wv_studio_gate_v1";
 
 
 function initHowto(){
-  var box = document.getElementById("howto");
-  if(!box) return;
-  try { box.open = false; } catch(err) {}
+  /* HOWTO_REMOVED_V1 — 上面提示已夠 */
 }
 
 
