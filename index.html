@@ -10,7 +10,7 @@
 <script>
 /* CACHE_BUST_V1 */
 (function(){
-  var cur = "20260822-010630";
+  var cur = "20260822-022750";
   try { if(sessionStorage.getItem("wv_reload_once")==="1") return; } catch(e) {}
   fetch("version.json?t="+Date.now(), {cache:"no-store"}).then(function(r){return r.json();}).then(function(v){
     if(v && v.id && v.id !== cur){
@@ -728,12 +728,12 @@ html[data-theme="light"] .closed-banner img{
         <span class="sec-chevron">▼ 點開</span>
       </span>
     </summary>
-    <div id="recent-list" class="recent-empty">常用會留在這裡，下次打開還在，方便再點</div>
+    <div id="recent-list" class="recent-empty">保留常選6品在這裡，下次打方便直接點選。</div>
   </details>
 
   <div class="note">
     本頁<strong>只產生清單</strong>。請複製清單 → 貼到 LINE 給阿剛。<br/>
-    有貨會安排開單；缺貨／要改顏色或彈規，阿剛會再跟您確認。
+    會盡快開單；如遇缺件或彈夾規格，阿剛會再跟您確認。
   </div>
 
   <div id="app"></div>
@@ -892,7 +892,7 @@ function renderRecent(){
   if(cnt) cnt.textContent = list.length ? ("("+list.length+")") : "";
   if(!list.length){
     box.className = "recent-empty";
-    box.textContent = "常用會留在這裡，下次打開還在，方便再點";
+    box.textContent = "保留常選6品在這裡，下次打方便直接點選。";
     return;
   }
   box.className = "";
