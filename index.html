@@ -10,7 +10,7 @@
 <script>
 /* CACHE_BUST_V1 */
 (function(){
-  var cur = "20260822-022750";
+  var cur = "20260822-022846";
   try { if(sessionStorage.getItem("wv_reload_once")==="1") return; } catch(e) {}
   fetch("version.json?t="+Date.now(), {cache:"no-store"}).then(function(r){return r.json();}).then(function(v){
     if(v && v.id && v.id !== cur){
@@ -728,7 +728,7 @@ html[data-theme="light"] .closed-banner img{
         <span class="sec-chevron">▼ 點開</span>
       </span>
     </summary>
-    <div id="recent-list" class="recent-empty">保留常選6品在這裡，下次打方便直接點選。</div>
+    <div id="recent-list" class="recent-empty">保留常選6品在這裡，下次方便直接點選。</div>
   </details>
 
   <div class="note">
@@ -892,7 +892,7 @@ function renderRecent(){
   if(cnt) cnt.textContent = list.length ? ("("+list.length+")") : "";
   if(!list.length){
     box.className = "recent-empty";
-    box.textContent = "保留常選6品在這裡，下次打方便直接點選。";
+    box.textContent = "保留常選6品在這裡，下次方便直接點選。";
     return;
   }
   box.className = "";
