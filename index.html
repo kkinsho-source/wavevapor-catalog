@@ -10,7 +10,7 @@
 <script>
 /* CACHE_BUST_V1 */
 (function(){
-  var cur = "20260824-200844";
+  var cur = "20260824-205751";
   try { if(sessionStorage.getItem("wv_reload_once")==="1") return; } catch(e) {}
   fetch("version.json?t="+Date.now(), {cache:"no-store"}).then(function(r){return r.json();}).then(function(v){
     if(v && v.id && v.id !== cur){
@@ -945,7 +945,7 @@ function initStoreHint(){
       return;
     }
     if(re6.test(raw)){
-      hint.textContent = "店號格式看起來正常（6 碼）";
+      hint.textContent = "請再重複確認，以防寄錯店";
       return;
     }
     if(digits.length === 6 && digits !== raw){
@@ -981,7 +981,7 @@ function initPhoneHint(){
     }
     if(/^09\d{8}$/.test(digits)){
       hint.className = "field-hint";
-      hint.textContent = "手機格式看起來正常（10 碼）";
+      hint.textContent = "請再重複確認，確保可收到貨簡訊";
       return;
     }
     hint.className = "field-hint warn";
