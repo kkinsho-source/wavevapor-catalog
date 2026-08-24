@@ -10,7 +10,7 @@
 <script>
 /* CACHE_BUST_V1 */
 (function(){
-  var cur = "20260825-025903";
+  var cur = "20260825-030106";
   try { if(sessionStorage.getItem("wv_reload_once")==="1") return; } catch(e) {}
   fetch("version.json?t="+Date.now(), {cache:"no-store"}).then(function(r){return r.json();}).then(function(v){
     if(v && v.id && v.id !== cur){
@@ -421,7 +421,7 @@ details.sec summary { padding: 13px 6px; }
 }
 
 
-/* NOTE_FAB_V1 — 叮嚀右下小卡，不拉滿螢幕 */
+/* NOTE_FAB_V1 — 叮嚀右下小卡；ANNOUNCE_FULL_V1 全文展開不內捲 */
 .announce{position:fixed;left:auto;right:78px;width:min(360px,calc(100vw - 96px));
   bottom:calc(88px + env(safe-area-inset-bottom));top:auto;z-index:81;display:none;
   align-items:stretch;justify-content:stretch;background:transparent;padding:0;pointer-events:none}
@@ -429,8 +429,8 @@ body.announce-on,html.announce-on{overflow:hidden !important;overscroll-behavior
 body.announce-on #gate{display:none !important}
 body.announce-on #announce{display:flex !important}
 body.announce-on #main{display:block !important}
-.announce-card{width:100%;max-height:min(52vh,calc(100dvh - 160px));overflow:auto;overscroll-behavior:contain;pointer-events:auto;
-  background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px 18px 18px;
+.announce-card{width:100%;max-height:none;overflow:visible;pointer-events:auto;
+  background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px 16px 14px;
   box-shadow:0 10px 32px rgba(0,0,0,.35)}
 .announce-card h2{margin:0 0 12px;font-size:1.15rem;font-weight:800;text-align:center;line-height:1.35}
 .announce-card .a-body{font-size:.92rem;line-height:1.55;color:var(--text)}
