@@ -10,7 +10,7 @@
 <script>
 /* CACHE_BUST_V1 */
 (function(){
-  var cur = "20260828-131622";
+  var cur = "20260828-132625";
   try { if(sessionStorage.getItem("wv_reload_once")==="1") return; } catch(e) {}
   fetch("version.json?t="+Date.now(), {cache:"no-store"}).then(function(r){return r.json();}).then(function(v){
     if(v && v.id && v.id !== cur){
@@ -31,9 +31,6 @@ html,body{margin:0;background:var(--bg);color:var(--text);
 button,input,select,textarea{font:inherit}
 a{color:var(--accent)}
 .wrap{max-width:760px;margin:0 auto;padding:12px 12px 150px}
-@media (max-width:760px){
-  .wrap{padding-right:62px}
-}
 header{position:sticky;top:0;z-index:30;background:linear-gradient(180deg,#0b0f14 80%,transparent);padding:10px 0 6px}
 h1{font-size:1.15rem;margin:0 0 4px}
 .sub{color:var(--muted);font-size:.82rem;margin:0 0 8px}
@@ -123,8 +120,8 @@ body.unlocked #main[hidden]{display:block !important}
 .closed-banner{display:flex;gap:12px;align-items:center;margin-bottom:10px}
 .closed-banner img{width:72px;height:72px;object-fit:contain;border-radius:10px;background:#0f1620;border:1px solid var(--line)}
 
-.to-top{position:fixed;right:18px;bottom:calc(154px + env(safe-area-inset-bottom));z-index:70;width:46px;height:46px;border-radius:999px;border:1px solid var(--line);background:rgba(20,27,36,.92);color:#fff;font-size:1.15rem;font-weight:700;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,.35);backdrop-filter:blur(6px)}
-.to-top.show,body.unlocked .to-top.show{display:flex !important}
+.to-top{width:48px;height:48px;min-width:48px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:1.15rem;font-weight:700;cursor:pointer;display:none;align-items:center;justify-content:center}
+body.unlocked .to-top{display:flex}
 
 
 html[data-theme="light"]{
@@ -186,9 +183,6 @@ html, body {
   text-rendering: optimizeLegibility;
 }
 .wrap { padding: 14px 14px 158px; max-width: 780px; }
-@media (max-width:760px){
-  .wrap { padding-right: 62px; }
-}
 header {
   padding: 12px 0 8px;
   backdrop-filter: blur(10px);
@@ -318,11 +312,7 @@ html[data-theme="light"] .model-img {
 .btn-main { box-shadow: 0 6px 18px rgba(43,111,255,.35); }
 .btn-main:disabled { box-shadow: none; }
 .to-top {
-  width: 46px; height: 46px;
-  bottom: calc(92px + env(safe-area-inset-bottom));
-  right: 16px;
-  box-shadow: var(--shadow);
-  transition: opacity .15s ease, transform .12s ease;
+  width: 48px; height: 48px; min-width: 48px;
 }
 .to-top:active { transform: scale(.96); }
 .copy-card {
@@ -452,19 +442,15 @@ body.announce-on #main{display:block !important}
   background:linear-gradient(135deg,#3d9eff,#2b6fff);color:#fff}
 html[data-theme="light"] .announce{background:transparent}
 .note-fab{
-  pointer-events:auto;position:fixed;right:18px;
-  bottom:calc(86px + env(safe-area-inset-bottom));z-index:55;
-  width:46px;height:46px;border-radius:999px;border:1px solid var(--line);
-  background:rgba(20,27,36,.94);color:#ffc857;font-size:1.15rem;font-weight:800;
+  pointer-events:auto;position:static;z-index:auto;
+  width:40px;height:40px;border-radius:999px;border:1px solid var(--line);
+  background:var(--card);color:#ffc857;font-size:1.05rem;font-weight:800;
   cursor:pointer;display:none;align-items:center;justify-content:center;
-  box-shadow:0 6px 18px rgba(0,0,0,.35)}
+}
 body.unlocked .note-fab{display:flex}
 body.announce-on .note-fab{display:none}
-body.sheet-on .note-fab{display:none !important}
-body.sheet-on .to-top{display:none !important}
-/* NOTE_FAB_STACK_V1: 🛒 → ⚠ → ↑ 置頂必須在叮嚀上面、可點 */
-.to-top{bottom:calc(154px + env(safe-area-inset-bottom)) !important;right:18px !important;z-index:70 !important}
-body.announce-on .to-top.show{display:flex !important}
+body.sheet-on .to-top{visibility:hidden}
+.head-actions{display:flex;align-items:center;gap:8px;flex:0 0 auto}
 
 
 /* CART_FAB_UI */
@@ -625,10 +611,6 @@ html[data-theme="light"] .juice-subs .subtab.active { background: #e8eef8; }
   min-height: 44px;
   padding: 4px 2px;
 }
-.to-top {
-  bottom: calc(144px + env(safe-area-inset-bottom)) !important;
-  right: 18px !important;
-}
 .sec-summary-row {
   display: flex;
   align-items: center;
@@ -764,7 +746,10 @@ html[data-theme="light"] .closed-banner img{
         <p class="ver-badge" id="ver-badge">版本載入中…</p>
         <p class="sub">僅供參考使用 · 勾選後複製傳回LINE給我們</p>
       </div>
-      <button type="button" class="theme-btn" id="theme-btn" title="日夜切換">日間</button>
+      <div class="head-actions">
+        <button type="button" class="note-fab" id="note-fab" aria-label="重要小叮嚀" title="重要小叮嚀">⚠</button>
+        <button type="button" class="theme-btn" id="theme-btn" title="日夜切換">日間</button>
+      </div>
     </div>
     <div class="hscroll" data-hscroll>
       <button type="button" class="hscroll-btn hscroll-prev" hidden aria-label="向左">◀</button>
@@ -849,6 +834,7 @@ html[data-theme="light"] .closed-banner img{
       </div>
     </div>
     <div class="dock-bar" id="dock-bar">
+      <button type="button" class="to-top" id="to-top" aria-label="回頂" title="回頂">↑</button>
       <button type="button" class="cart-fab" id="cart-fab" aria-label="打開挑選清單" title="挑選清單">
         已選 <span class="fab-badge" id="fab-badge">0</span> 件
         <span class="fab-need" id="fab-need">收件未填</span>
@@ -857,12 +843,10 @@ html[data-theme="light"] .closed-banner img{
     </div>
   </div>
 </div>
-<button type="button" class="note-fab" id="note-fab" aria-label="重要小叮嚀" title="重要小叮嚀">⚠</button>
 <div class="cart-tip" id="cart-tip" role="status">
   已加入商品。選完請點底部「看清單」，填收件後再複製給我們。
   <button type="button" id="cart-tip-ok">知道了</button>
 </div>
-<button type="button" class="to-top" id="to-top" aria-label="回頂" title="回頂">↑</button>
 
 <div class="copy-modal" id="copy-modal" role="dialog" aria-modal="true" aria-labelledby="copy-modal-title" aria-hidden="true">
   <div class="copy-card">
@@ -1085,14 +1069,9 @@ function showCopyModal(){
 }
 
 function initToTop(){
+  /* FAB_DOCK_V1 */
   const btn = document.getElementById("to-top");
   if(!btn) return;
-  const onScroll = ()=>{
-    if(window.scrollY > 80) btn.classList.add("show");
-    else btn.classList.remove("show");
-  };
-  window.addEventListener("scroll", onScroll, {passive:true});
-  onScroll();
   btn.addEventListener("click", ()=>{
     window.scrollTo({top:0, behavior:"smooth"});
   });
