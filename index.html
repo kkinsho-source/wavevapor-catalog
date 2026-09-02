@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-Hant" data-theme="dark">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -10,7 +10,7 @@
 <script>
 /* CACHE_BUST_V1 */
 (function(){
-  var cur = "20260903-055041";
+  var cur = "20260903-055805";
   try { if(sessionStorage.getItem("wv_reload_once")==="1") return; } catch(e) {}
   fetch("version.json?t="+Date.now(), {cache:"no-store"}).then(function(r){return r.json();}).then(function(v){
     if(v && v.id && v.id !== cur){
@@ -749,7 +749,6 @@ html[data-theme="light"] .closed-banner img{
       </div>
       <div class="head-actions">
         <button type="button" class="note-fab" id="note-fab" aria-label="重要小叮嚀" title="重要小叮嚀">⚠</button>
-        <button type="button" class="theme-btn" id="theme-btn" title="日夜切換">日間</button>
       </div>
     </div>
     <div class="hscroll" data-hscroll>
@@ -895,20 +894,8 @@ function initHowto(){
 
 function initTheme(){
   const root = document.documentElement;
-  const btn = document.getElementById("theme-btn");
-  let theme = "dark";
-  try { theme = localStorage.getItem(THEME_KEY) || "dark"; } catch(e) {}
-  if(theme !== "light" && theme !== "dark") theme = "dark";
-  root.setAttribute("data-theme", theme);
-  if(btn){
-    btn.textContent = theme === "light" ? "夜間" : "日間";
-    btn.onclick = ()=>{
-      const next = root.getAttribute("data-theme") === "light" ? "dark" : "light";
-      root.setAttribute("data-theme", next);
-      try { localStorage.setItem(THEME_KEY, next); } catch(e) {}
-      btn.textContent = next === "light" ? "夜間" : "日間";
-    };
-  }
+  root.setAttribute("data-theme", "dark");
+  try { localStorage.removeItem(THEME_KEY); } catch(e) {}
 }
 
 function initVersion(){
